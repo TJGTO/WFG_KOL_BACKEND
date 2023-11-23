@@ -1,6 +1,7 @@
 const express = require("express");
 const globalErrorHandler = require("./utils/middlewares/globalErrorHandler");
 const { connectDB } = require("./utils/dbConfig");
+require('dotenv').config();
 
 const app = express();
 
