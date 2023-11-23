@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-require('dotenv').config();
 
 function connectDB() {
   const url = process.env.DATABASE_STREAM;
