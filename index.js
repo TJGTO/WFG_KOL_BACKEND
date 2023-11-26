@@ -5,8 +5,6 @@ require('dotenv').config();
 
 const app = express();
 
-require("dotenv").config();
-
 connectDB();
 
 app.use(express.json({ limit: "100mb" }));
