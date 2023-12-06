@@ -1,11 +1,15 @@
 const express = require("express");
 const globalErrorHandler = require("./utils/middlewares/globalErrorHandler");
 const { connectDB } = require("./utils/dbConfig");
+var cors = require("cors");
+
 require("dotenv").config();
 
 const app = express();
 
 connectDB();
+
+app.use(cors());
 
 app.use(express.json({ limit: "100mb" }));
 
