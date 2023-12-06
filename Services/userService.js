@@ -28,4 +28,26 @@ module.exports = class Userservice {
     }
   }
 
+  async loginuser(data) {
+      const UserDetails = await this.userModel.findOne({email: data.email});
+      if(!UserDetails){
+        throw Error("User not found");
+      }
+        const response = await bcrypt
+        .compare(data.password, UserDetails.password)
+        .then((res) => res)
+        .catch((err) => false);
+
+      if(response){
+        const token = jwt.sign({ foo: 'bar' }, process.env.Secret);
+        return {
+          token: token
+        }
+      }else{
+        throw Error("Password doesn't match");
+      }
+      
+      
+  }
+
 };
