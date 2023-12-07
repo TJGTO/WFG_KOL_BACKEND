@@ -1,8 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const requestValidator = require("../../utils/middlewares/requestValidator");
-const { createUserSchema } = require("./validationSchema");
-const loginvalidationschema = require("./loginValidationSchema");
+const {
+  createUserSchema,
+  loginvalidationschema,
+} = require("./validationSchema");
 
 router.post(
   "/create",
@@ -10,11 +12,10 @@ router.post(
   require("./createUser")
 );
 
-router.post('/login',
-requestValidator(loginvalidationschema),
-require('./loginuser')
+router.post(
+  "/login",
+  requestValidator(loginvalidationschema),
+  require("./loginuser")
 );
-
-
 
 module.exports = router;
