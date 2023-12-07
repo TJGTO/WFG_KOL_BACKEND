@@ -37,8 +37,12 @@ module.exports = class Userservice {
       .then((res) => res)
       .catch((err) => false);
 
+    const payload = {
+      id :UserDetails.id,
+      email:UserDetails.email
+    }
     if (response) {
-      const token = jwt.sign({ foo: "bar" }, process.env.Secret);
+      const token = await jwt.sign(payload, process.env.Secret);
       return {
         token: token,
       };
