@@ -45,6 +45,8 @@ module.exports = class Userservice {
       const token = await jwt.sign(payload, process.env.Secret);
       return {
         token: token,
+        email: UserDetails.email,
+        fullname: UserDetails.firstName + " " + UserDetails.lastName
       };
     } else {
       throw Error("Password doesn't match");
