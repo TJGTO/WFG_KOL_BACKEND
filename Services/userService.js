@@ -52,4 +52,13 @@ module.exports = class Userservice {
       throw Error("Password doesn't match");
     }
   }
+
+  async updateuser(data) {
+    const availableUser = await this.userModel.findOne({user: data.id});
+    if(!availableUser){
+      throw new Error("User not available");
+    } 
+    
+  }
+
 };

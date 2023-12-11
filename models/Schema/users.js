@@ -8,6 +8,9 @@ const usersSchema = new Schema({
   phone_no: {type : String},
   email: {type: String},
   password: {type: String},
+  facebook: {type: String},
+  instagram: {type: String},
+  youtube: {type: String},
   salt: {type: String}
 });
 
