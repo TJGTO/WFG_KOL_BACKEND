@@ -5,7 +5,7 @@ const {
   createUserSchema,
   loginvalidationschema,
 } = require("./validationSchema");
-const { route } = require(".");
+const validateToken = require("../../utils/middlewares/validateToken");
 
 router.post(
   "/create",
@@ -21,6 +21,7 @@ router.post(
 
 router.patch(
   "/update",
+  validateToken,
   require("./updateuser")
 );
 

@@ -3,6 +3,6 @@ const catchAsync = require("../../utils/catchAsync");
 const responseHandler = require("../../utils/responseHandler");
 
 module.exports = catchAsync(async (req, res, next) => {
-    let payload = await new userService().updateuser(req.body);
+    let payload = await new userService().updateuser(req);
   responseHandler(true, payload, res);
   });

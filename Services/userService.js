@@ -54,10 +54,14 @@ module.exports = class Userservice {
   }
 
   async updateuser(data) {
-    const availableUser = await this.userModel.findOne({user: data.id});
-    if(!availableUser){
-      throw new Error("User not available");
-    } 
+    try {
+      const availableUser = await this.userModel.findOneAndUpdate({_id: data.user.id}, data.body);
+        return "update is successful";
+    } catch (error) {
+        throw new Error('failed to update user')
+    }
+    
+   
     
   }
 
