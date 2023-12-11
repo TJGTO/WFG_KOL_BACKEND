@@ -5,7 +5,7 @@ const usersSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String },
   DOB : { type : String},
-  phone_no: {type : Number},
+  phone_no: {type : String},
   email: {type: String},
   password: {type: String},
   salt: {type: String}
