@@ -5,6 +5,7 @@ const {
   createUserSchema,
   loginvalidationschema,
 } = require("./validationSchema");
+const { route } = require(".");
 
 router.post(
   "/create",
@@ -16,6 +17,11 @@ router.post(
   "/login",
   requestValidator(loginvalidationschema),
   require("./loginuser")
+);
+
+router.patch(
+  "/update",
+  require("./updateuser")
 );
 
 module.exports = router;
