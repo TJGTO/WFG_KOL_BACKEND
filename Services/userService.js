@@ -38,18 +38,30 @@ module.exports = class Userservice {
       .catch((err) => false);
 
     const payload = {
-      id :UserDetails.id,
-      email:UserDetails.email
-    }
+      id: UserDetails.id,
+      email: UserDetails.email,
+    };
     if (response) {
       const token = await jwt.sign(payload, process.env.Secret);
       return {
         token: token,
         email: UserDetails.email,
-        fullname: UserDetails.firstName + " " + UserDetails.lastName
+        fullname: UserDetails.firstName + " " + UserDetails.lastName,
       };
     } else {
       throw Error("Password doesn't match");
+    }
+  }
+
+  async updateuser(data) {
+    try {
+      const availableUser = await this.userModel.findOneAndUpdate(
+        { _id: data.user.id },
+        data.body
+      );
+      return "update is successful";
+    } catch (error) {
+      throw new Error("failed to update user");
     }
   }
 };

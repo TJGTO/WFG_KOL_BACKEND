@@ -5,6 +5,7 @@ const {
   createUserSchema,
   loginvalidationschema,
 } = require("./validationSchema");
+const validateToken = require("../../utils/middlewares/validateToken");
 
 router.post(
   "/create",
@@ -17,5 +18,7 @@ router.post(
   requestValidator(loginvalidationschema),
   require("./loginuser")
 );
+
+router.patch("/update", validateToken, require("./updateuser"));
 
 module.exports = router;
