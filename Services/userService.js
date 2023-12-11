@@ -37,10 +37,16 @@ module.exports = class Userservice {
       .then((res) => res)
       .catch((err) => false);
 
+    const payload = {
+      id :UserDetails.id,
+      email:UserDetails.email
+    }
     if (response) {
-      const token = jwt.sign({ foo: "bar" }, process.env.Secret);
+      const token = await jwt.sign(payload, process.env.Secret);
       return {
         token: token,
+        email: UserDetails.email,
+        fullname: UserDetails.firstName + " " + UserDetails.lastName
       };
     } else {
       throw Error("Password doesn't match");
