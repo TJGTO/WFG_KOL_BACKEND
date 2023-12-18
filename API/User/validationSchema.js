@@ -22,4 +22,21 @@ const loginvalidationschema = yup.object({
   }),
 });
 
-module.exports = { createUserSchema, loginvalidationschema };
+const updateuserschema = yup.object().shape({
+  body: yup.object({
+    facebook: yup.string(),
+    address: yup.object().when('isAddress', {
+      is: true,
+      then: yup.object({
+        address_line_1: yup.string().required("AddressLine1 is required"),
+        address_line_2: yup.string(),
+        pincode: yup.string().required("Pincode is required"),
+        state : yup.object({
+          state_id : yup.string().required("StateId is required"),
+          state_name : yup.string().required()
+        })
+      }),
+    }),
+})})
+
+module.exports = { createUserSchema, loginvalidationschema, updateuserschema };

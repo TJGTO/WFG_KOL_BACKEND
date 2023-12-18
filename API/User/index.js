@@ -4,6 +4,7 @@ const requestValidator = require("../../utils/middlewares/requestValidator");
 const {
   createUserSchema,
   loginvalidationschema,
+  updateuserschema
 } = require("./validationSchema");
 const validateToken = require("../../utils/middlewares/validateToken");
 
@@ -19,6 +20,9 @@ router.post(
   require("./loginuser")
 );
 
-router.patch("/update", validateToken, require("./updateuser"));
+router.patch("/update",
+ validateToken,
+ requestValidator(updateuserschema),
+ require("./updateuser"));
 
 module.exports = router;
