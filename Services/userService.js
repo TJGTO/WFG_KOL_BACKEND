@@ -60,9 +60,5 @@ module.exports = class Userservice {
     } catch (error) {
         throw new Error('failed to update user')
     }
-    
-   
-    
   }
-
 };
