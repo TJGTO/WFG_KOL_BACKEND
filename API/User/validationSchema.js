@@ -31,6 +31,7 @@ const updateuserschema = yup.object().shape({
         address_line_1: yup.string().required("AddressLine1 is required"),
         address_line_2: yup.string(),
         pincode: yup.string().required("Pincode is required"),
+        city: yup.string().required("City is required"),
         state : yup.object({
           state_id : yup.string().required("StateId is required"),
           state_name : yup.string().required()

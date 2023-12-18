@@ -18,6 +18,9 @@ const usersSchema = new Schema({
     pincode: {
       type: Number
     },
+    city:{
+      type : String
+    },
     state: {
       state_id: {
         type: Schema.Types.ObjectId
@@ -31,6 +34,7 @@ const usersSchema = new Schema({
   facebook: {type: String},
   instagram: {type: String},
   youtube: {type: String},
+  about : {type : String},
   salt: {type: String}
 });
 
