@@ -19,10 +19,6 @@ router.post(
   require("./loginuser")
 );
 
-router.patch(
-  "/update",
-  validateToken,
-  require("./updateuser")
-);
+router.patch("/update", validateToken, require("./updateuser"));
 
 module.exports = router;
