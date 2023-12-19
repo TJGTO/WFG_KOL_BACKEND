@@ -25,4 +25,9 @@ router.patch("/update",
  requestValidator(updateuserschema),
  require("./updateuser"));
 
+router.get("/userdetails",
+validateToken,
+require("./userDetails")
+);
+
 module.exports = router;

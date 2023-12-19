@@ -64,4 +64,19 @@ module.exports = class Userservice {
       throw new Error("failed to update user");
     }
   }
+
+  async userDetails(data) {
+    try {
+      const user = await this.userModel.findById({_id: data.user.id})
+      if(!user) {
+        throw Error("User profile not found")
+      }
+      const userObj = JSON.parse(JSON.stringify(user));
+      delete userObj.password;
+      delete userObj.salt;
+      return userObj;
+    } catch(error) {
+      throw new Error("Failed to fetch user profile details");
+    }
+  }
 };
