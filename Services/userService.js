@@ -10,8 +10,8 @@ module.exports = class Userservice {
   }
   /**
    *create a user
-   * @param {*} request
-   * @returns
+   * @param {*} data - it has registration details of user
+   * @returns - it returns a user after registartion
    */
   async createUser(data) {
     try {
@@ -23,9 +23,18 @@ module.exports = class Userservice {
       this.logger.info(result);
       return result;
     } catch (err) {
+      if(err.code == 11000) {
+        throw new Error("User already exists, please log in");
+      }
       throw new Error("Wrong data");
     }
   }
+
+   /**
+   *login a user
+   * @param {*} data - it has login credentials of user
+   * @returns - it returns token, email and full name
+   */
 
   async loginuser(data) {
     const UserDetails = await this.userModel.findOne({ email: data.email });
@@ -53,6 +62,11 @@ module.exports = class Userservice {
     }
   }
 
+   /**
+   *update a user
+   * @param {*} data 
+   * @returns - After update operation it returns user object
+   */
   async updateuser(data) {
     try {
       const availableUser = await this.userModel.findOneAndUpdate(
@@ -65,6 +79,11 @@ module.exports = class Userservice {
     }
   }
 
+   /**
+   *Get a user details
+   * @param {*} data 
+   * @returns - returns a particular user profile details
+   */
   async userDetails(data) {
     try {
       const user = await this.userModel.findById({_id: data.user.id})
