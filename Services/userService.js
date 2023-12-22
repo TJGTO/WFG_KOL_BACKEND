@@ -23,14 +23,14 @@ module.exports = class Userservice {
       this.logger.info(result);
       return result;
     } catch (err) {
-      if(err.code == 11000) {
+      if (err.code == 11000) {
         throw new Error("User already exists, please log in");
       }
       throw new Error("Wrong data");
     }
   }
 
-   /**
+  /**
    *login a user
    * @param {*} data - it has login credentials of user
    * @returns - it returns token, email and full name
@@ -39,7 +39,7 @@ module.exports = class Userservice {
   async loginuser(data) {
     const UserDetails = await this.userModel.findOne({ email: data.email });
     if (!UserDetails) {
-      throw Error("User not found");
+      throw Error("User not found,Please register first");
     }
     const response = await bcrypt
       .compare(data.password, UserDetails.password)
@@ -62,9 +62,9 @@ module.exports = class Userservice {
     }
   }
 
-   /**
+  /**
    *update a user
-   * @param {*} data 
+   * @param {*} data
    * @returns - After update operation it returns user object
    */
   async updateuser(data) {
@@ -79,22 +79,22 @@ module.exports = class Userservice {
     }
   }
 
-   /**
+  /**
    *Get a user details
-   * @param {*} data 
+   * @param {*} data
    * @returns - returns a particular user profile details
    */
   async userDetails(data) {
     try {
-      const user = await this.userModel.findById({_id: data.user.id})
-      if(!user) {
-        throw Error("User profile not found")
+      const user = await this.userModel.findById({ _id: data.user.id });
+      if (!user) {
+        throw Error("User profile not found");
       }
       const userObj = JSON.parse(JSON.stringify(user));
       delete userObj.password;
       delete userObj.salt;
       return userObj;
-    } catch(error) {
+    } catch (error) {
       throw new Error("Failed to fetch user profile details");
     }
   }
