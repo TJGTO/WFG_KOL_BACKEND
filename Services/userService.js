@@ -2,11 +2,13 @@ var jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { UsersModel } = require("../models/Schema/users");
 const logger = require("../utils/loggerConfig");
+const GoogleDriveService = require("./gooleDriveService");
 
 module.exports = class Userservice {
   constructor() {
     this.userModel = UsersModel;
     this.logger = logger;
+    this.googleDriveService = new GoogleDriveService();
   }
   /**
    *create a user
@@ -56,6 +58,9 @@ module.exports = class Userservice {
         token: token,
         email: UserDetails.email,
         fullname: UserDetails.firstName + " " + UserDetails.lastName,
+        profilePictureUrl: UserDetails.profilePictureURL
+          ? UserDetails.profilePictureURL
+          : null,
       };
     } else {
       throw Error("Password doesn't match");
@@ -96,6 +101,46 @@ module.exports = class Userservice {
       return userObj;
     } catch (error) {
       throw new Error("Failed to fetch user profile details");
+    }
+  }
+
+  /**
+   *update user Profile picture
+   * @param {*} data
+   * @returns - upload it one google drive and save image URL into DB
+   */
+  async updateProfilePicture(data) {
+    try {
+      //get the user data details first
+      const userDetails = await this.userDetails(data);
+      //upload the file in drive
+      const response = await this.googleDriveService.uploadFile(
+        data.files.file,
+        "profilepicture"
+      );
+      if (!response.isSuccess) {
+        throw Error("Failed to update the Profile Picture");
+      }
+      //get the current profile picture Url
+      const profileUrl = userDetails.profilePictureURL
+        ? userDetails.profilePictureURL
+        : "";
+      //update the recently uploaded file link in db
+      await this.userModel.findOneAndUpdate(
+        { _id: data.user.id },
+        {
+          profilePictureURL: `https://drive.google.com/uc?export=view&id=${response.data.id}`,
+        }
+      );
+      //if old profile picture was there then get the id and delete it from drive
+      if (profileUrl) {
+        let fileId = profileUrl.split("=")[2];
+        await this.googleDriveService.deleteFile(fileId);
+      }
+
+      return true;
+    } catch (error) {
+      throw new Error("Failed to update the Profile Picture");
     }
   }
 };

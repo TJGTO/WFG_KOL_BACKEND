@@ -8,6 +8,7 @@ const usersSchema = new Schema({
   academic: { type: String, enum: ["Working Professional", "Student"] },
   phone_no: { type: String },
   email: { type: String },
+  profilePictureURL: { type: String },
   address: {
     address_line_1: {
       type: String,
