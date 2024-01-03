@@ -128,7 +128,7 @@ module.exports = class Userservice {
 
       return true;
     } catch (error) {
-      throw new Error("Failed to fetch user profile details");
+      throw new Error("Failed to update the Profile Picture");
     }
   }
 };
