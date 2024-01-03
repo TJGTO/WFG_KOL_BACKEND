@@ -52,4 +52,26 @@ module.exports = class GoogleDriveService {
       };
     }
   }
+  async deleteFile(fileId) {
+    try {
+      const drive = google.drive({
+        version: this.version,
+        auth: this.createAuthObject(),
+      });
+
+      await drive.files.delete({
+        fileId: fileId,
+      });
+
+      return {
+        isSuccess: true,
+        message: "File deleted successfully",
+      };
+    } catch (error) {
+      return {
+        isSuccess: false,
+        error: error.message || "Error deleting file",
+      };
+    }
+  }
 };

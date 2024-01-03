@@ -111,6 +111,9 @@ module.exports = class Userservice {
    */
   async updateProfilePicture(data) {
     try {
+      //get the user data details first
+      const userDetails = await this.userDetails(data);
+      //upload the file in drive
       const response = await this.googleDriveService.uploadFile(
         data.files.file,
         "profilepicture"
@@ -118,13 +121,22 @@ module.exports = class Userservice {
       if (!response.isSuccess) {
         throw Error("Failed to update the Profile Picture");
       }
-
+      //get the current profile picture Url
+      const profileUrl = userDetails.profilePictureURL
+        ? userDetails.profilePictureURL
+        : "";
+      //update the recently uploaded file link in db
       await this.userModel.findOneAndUpdate(
         { _id: data.user.id },
         {
           profilePictureURL: `https://drive.google.com/uc?export=view&id=${response.data.id}`,
         }
       );
+      //if old profile picture was there then get the id and delete it from drive
+      if (profileUrl) {
+        let fileId = profileUrl.split("=")[2];
+        await this.googleDriveService.deleteFile(fileId);
+      }
 
       return true;
     } catch (error) {
