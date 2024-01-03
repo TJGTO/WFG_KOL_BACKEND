@@ -1,23 +1,23 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const requestValidator = require("../../utils/middlewares/requestValidator");
-const {createGameSchema, addUpdatePlayerSchema} = require('./validationschema')
+const {
+  createGameSchema,
+  addUpdatePlayerSchema,
+} = require("./validationschema");
 
 router.post(
-    '/create',
-    requestValidator(createGameSchema),
-    require('./creategame')
+  "/create",
+  requestValidator(createGameSchema),
+  require("./creategame")
 );
 
 router.post(
-    '/addUpdate',
-    requestValidator(addUpdatePlayerSchema),
-    require('./addUpdatePlayer')
-)
+  "/addUpdate",
+  requestValidator(addUpdatePlayerSchema),
+  require("./addUpdatePlayer")
+);
 
-router.delete(
-    '/removePlayer',
-    require('./removeplayer')
-)
+router.delete("/removePlayer", require("./removeplayer"));
 
 module.exports = router;
