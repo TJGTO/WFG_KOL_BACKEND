@@ -28,7 +28,7 @@ module.exports = class GoogleDriveService {
       const bufferStream = new stream.PassThrough();
       bufferStream.end(fileObject.data);
       const { data } = await google
-        .drive({ version: this.version, auth: createAuthObject() })
+        .drive({ version: this.version, auth: this.createAuthObject() })
         .files.create({
           media: {
             body: bufferStream,
@@ -36,7 +36,7 @@ module.exports = class GoogleDriveService {
           },
           requestBody: {
             name: fileObject.name,
-            parents: getFolderDetais(folderName),
+            parents: this.getFolderDetais(folderName),
           },
           fields: "id,name",
         });
