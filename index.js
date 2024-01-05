@@ -2,7 +2,7 @@ const express = require("express");
 const globalErrorHandler = require("./utils/middlewares/globalErrorHandler");
 const { connectDB } = require("./utils/dbConfig");
 const fileupload = require("express-fileupload");
-var cors = require("cors");
+const cors = require("cors");
 
 require("dotenv").config();
 
