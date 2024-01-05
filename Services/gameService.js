@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const { gameModel } = require("../models/Schema/game");
 const { UsersModel } = require("../models/Schema/users");
 const logger = require("../utils/loggerConfig");
@@ -21,9 +22,13 @@ module.exports = class Gameservice {
 
   async addUpdatePlayer(data) {
     try {
+      const playersData = data.players.map((x) => {
+        x.player_id = new ObjectId(x.player_id);
+        return x;
+      });
       const player = await this.gamesModel.findByIdAndUpdate(
         { _id: data.gameid },
-        { $push: { players: { $each: data.players } } }
+        { $push: { players: { $each: playersData } } }
       );
       return player;
     } catch (error) {
