@@ -11,11 +11,10 @@ module.exports = class Aboutservice {
    */
   async getAboutUs() {
     try {
-      const response = await this.aboutusModel
-        .find()
-        .sort({ timestamp: -1 })
-        .limit(1)
-        .toArray();
+      const response = await this.aboutusModel.find();
+      if (response && response.length > 0) {
+        return response[response.length - 1];
+      }
       return response;
     } catch (err) {
       throw new Error("Failed to fetch states");
