@@ -30,4 +30,8 @@ router.delete(
   require("./removeplayer")
 );
 
+router.get("/activematch", require("./activematches"));
+
+router.get("/match/:gameid", require("./matchdetails"));
+
 module.exports = router;

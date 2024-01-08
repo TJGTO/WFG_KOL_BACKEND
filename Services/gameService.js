@@ -47,4 +47,49 @@ module.exports = class Gameservice {
       throw new Error("Failed to remove player");
     }
   }
+
+  async activeMatches() {
+    try {
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+      const storedDate = new Date(currentDate - 48 * 3600 * 1000);
+      const activeMatches = await this.gamesModel.aggregate([
+        {
+          $addFields: {
+            convertedDate: {
+              $toDate: "$date",
+            },
+          },
+        },
+        {
+          $match: {
+            convertedDate: {
+              $gte: storedDate,
+            },
+          },
+        },
+        {
+          $project: {
+            players: 0,
+            createdAt: 0,
+            updatedAt: 0,
+            __v: 0,
+            convertedDate: 0,
+          },
+        },
+      ]);
+      return activeMatches;
+    } catch (error) {
+      throw new Error("Failed to fetch active matches");
+    }
+  }
+
+  async matchDetails(req) {
+    try {
+      const match = await this.gamesModel.findById({ _id: req.params.gameid });
+      return match;
+    } catch (error) {
+      throw new Error("Failed to fetch game details");
+    }
+  }
 };
