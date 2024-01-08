@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const { gameModel } = require("../models/Schema/game");
 const { UsersModel } = require("../models/Schema/users");
 const logger = require("../utils/loggerConfig");
@@ -21,9 +22,13 @@ module.exports = class Gameservice {
 
   async addUpdatePlayer(data) {
     try {
+      const playersData = data.players.map((x) => {
+        x.player_id = new ObjectId(x.player_id);
+        return x;
+      });
       const player = await this.gamesModel.findByIdAndUpdate(
         { _id: data.gameid },
-        { $push: { players: { $each: data.players } } }
+        { $push: { players: { $each: playersData } } }
       );
       return player;
     } catch (error) {
@@ -40,6 +45,51 @@ module.exports = class Gameservice {
       return removePlayer;
     } catch (error) {
       throw new Error("Failed to remove player");
+    }
+  }
+
+  async activeMatches() {
+    try {
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+      const storedDate = new Date(currentDate - 48 * 3600 * 1000);
+      const activeMatches = await this.gamesModel.aggregate([
+        {
+          $addFields: {
+            convertedDate: {
+              $toDate: "$date",
+            },
+          },
+        },
+        {
+          $match: {
+            convertedDate: {
+              $gte: storedDate,
+            },
+          },
+        },
+        {
+          $project: {
+            players: 0,
+            createdAt: 0,
+            updatedAt: 0,
+            __v: 0,
+            convertedDate: 0,
+          },
+        },
+      ]);
+      return activeMatches;
+    } catch (error) {
+      throw new Error("Failed to fetch active matches");
+    }
+  }
+
+  async matchDetails(req) {
+    try {
+      const match = await this.gamesModel.findById({ _id: req.params.gameid });
+      return match;
+    } catch (error) {
+      throw new Error("Failed to fetch game details");
     }
   }
 };

@@ -32,4 +32,18 @@ const addUpdatePlayerSchema = yup.object({
   }),
 });
 
-module.exports = { createGameSchema, addUpdatePlayerSchema };
+const removePlayerSchema = yup.object({
+  body: yup.object({
+    gameid: yup.string().required(),
+    playersid: yup
+      .array()
+      .of(yup.string().required().min(1, "You can't pass empty string"))
+      .min(1, "Minimum one player id is required"),
+  }),
+});
+
+module.exports = {
+  createGameSchema,
+  addUpdatePlayerSchema,
+  removePlayerSchema,
+};
