@@ -2,11 +2,15 @@ const yup = require("yup");
 
 const createGameSchema = yup.object({
   body: yup.object({
-    venue: yup.string().required(),
-    date: yup.string().required(),
-    start_time: yup.string().required(),
-    end_time: yup.string().required(),
-    price: yup.string().required(),
+    venue: yup.string().required("Venue is required"),
+    date: yup.string().required("Date is required"),
+    start_time: yup.string().required("Start time is required"),
+    end_time: yup.string().required("End time is required"),
+    number_of_players: yup
+      .number()
+      .required("Please enter number of players")
+      .min(1, "At least one player slot should be there"),
+    price: yup.number().required("Price is required"),
   }),
 });
 

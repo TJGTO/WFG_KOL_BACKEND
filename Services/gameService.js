@@ -57,8 +57,9 @@ module.exports = class Gameservice {
         {
           $addFields: {
             convertedDate: {
-              $toDate: "$date",
+              $dateFromString: { dateString: "$date", format: "%d/%m/%Y" },
             },
+            gameId: "$_id",
           },
         },
         {
@@ -73,6 +74,7 @@ module.exports = class Gameservice {
             players: 0,
             createdAt: 0,
             updatedAt: 0,
+            _id: 0,
             __v: 0,
             convertedDate: 0,
           },
