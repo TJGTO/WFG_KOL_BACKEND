@@ -10,6 +10,11 @@ module.exports = class Gameservice {
     this.logger = logger;
   }
 
+  /**
+   *Create a game
+   * @param {*} data
+   * @returns - returns a game
+   */
   async createGame(data) {
     try {
       const result = await this.gamesModel.create(data);
@@ -19,6 +24,12 @@ module.exports = class Gameservice {
       throw new Error("Wrong data");
     }
   }
+
+  /**
+   *Add or update a player in a previously created game
+   * @param {*} data
+   * @returns - returns a game with updated players list
+   */
 
   async addUpdatePlayer(data) {
     try {
@@ -36,6 +47,12 @@ module.exports = class Gameservice {
     }
   }
 
+  /**
+   *Remove a player from a previously created game
+   * @param {*} data
+   * @returns - returns a game with updated players list
+   */
+
   async removePlayer(data) {
     try {
       const removePlayer = await this.gamesModel.updateOne(
@@ -47,6 +64,12 @@ module.exports = class Gameservice {
       throw new Error("Failed to remove player");
     }
   }
+
+  /**
+   *Get active matches available
+   * @param {*} data
+   * @returns - returns active matches list
+   */
 
   async activeMatches() {
     try {
@@ -85,6 +108,12 @@ module.exports = class Gameservice {
       throw new Error("Failed to fetch active matches");
     }
   }
+
+  /**
+   *Fetch a particular matche detail
+   * @param {*} data
+   * @returns - returns the requested match details
+   */
 
   async matchDetails(req) {
     try {
