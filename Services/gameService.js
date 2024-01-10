@@ -118,6 +118,9 @@ module.exports = class Gameservice {
   async matchDetails(req) {
     try {
       const match = await this.gamesModel.findById({ _id: req.params.gameid });
+      const gameId = match._id;
+      delete match._id;
+      match.gameId = gameId;
       return match;
     } catch (error) {
       throw new Error("Failed to fetch game details");

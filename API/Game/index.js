@@ -32,6 +32,6 @@ router.delete(
 
 router.get("/activematch", require("./activematches"));
 
-router.get("/match/:gameid", require("./matchdetails"));
+router.get("/details/:gameid", require("./matchdetails"));
 
 module.exports = router;

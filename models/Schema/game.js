@@ -45,6 +45,16 @@ const gameSchema = new Schema(
         profilepictureurl: {
           type: String,
         },
+        rating: {
+          type: Number,
+        },
+        phoneNumber: {
+          type: String,
+        },
+        position: {
+          type: String,
+          enum: ["Defence", "Midfield", "Attack", "Keeper"],
+        },
       },
     ],
   },
