@@ -1,5 +1,6 @@
 var jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const moment = require("moment");
 const { UsersModel } = require("../models/Schema/users");
 const logger = require("../utils/loggerConfig");
 const GoogleDriveService = require("./gooleDriveService");
@@ -142,5 +143,12 @@ module.exports = class Userservice {
     } catch (error) {
       throw new Error("Failed to update the Profile Picture");
     }
+  }
+
+  calculateAge(dateOfBirth) {
+    const dob = moment(dateOfBirth, "YYYY-MM-DD");
+    const currentDate = moment();
+    const age = currentDate.diff(dob, "years");
+    return age;
   }
 };

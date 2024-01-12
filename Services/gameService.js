@@ -2,12 +2,16 @@ const { ObjectId } = require("mongodb");
 const { gameModel } = require("../models/Schema/game");
 const { UsersModel } = require("../models/Schema/users");
 const logger = require("../utils/loggerConfig");
+const GoogleDriveService = require("./gooleDriveService");
+const Userservice = require("./userService");
 
 module.exports = class Gameservice {
   constructor() {
     this.gamesModel = gameModel;
     this.usersModel = UsersModel;
     this.logger = logger;
+    this.googleDriveService = new GoogleDriveService();
+    this.userService = new Userservice();
   }
 
   /**
@@ -124,6 +128,36 @@ module.exports = class Gameservice {
       return match;
     } catch (error) {
       throw new Error("Failed to fetch game details");
+    }
+  }
+
+  async registerForAMatch(req) {
+    try {
+      const userDetails = await this.userService.userDetails(req);
+      const response = await this.googleDriveService.uploadFile(
+        req.files.file,
+        "gamePayment"
+      );
+      if (!response.isSuccess) {
+        throw Error("Failed to upload the picture");
+      }
+
+      const playerObj = {};
+      playerObj.player_id = new ObjectId(req.user.id);
+      playerObj.paymentImageurl = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
+      playerObj.profilepictureurl = userDetails.profilePictureURL;
+      playerObj.phoneNumber = userDetails.phone_no;
+      playerObj.name = userDetails.firstName + " " + userDetails.lastName;
+      playerObj.position = req.body.position;
+      playerObj.age = this.userService.calculateAge(userDetails.DOB);
+      const player = await this.gamesModel.findByIdAndUpdate(
+        { _id: new ObjectId(req.body.gameid) },
+        { $push: { players: playerObj } }
+      );
+
+      return player;
+    } catch (error) {
+      throw new Error("Failed to register");
     }
   }
 };

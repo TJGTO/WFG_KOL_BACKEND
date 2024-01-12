@@ -34,4 +34,6 @@ router.get("/activematch", require("./activematches"));
 
 router.get("/details/:gameid", require("./matchdetails"));
 
+router.post("/register", validateToken, require("./registerInGame"));
+
 module.exports = router;
