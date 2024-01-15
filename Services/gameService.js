@@ -132,8 +132,16 @@ module.exports = class Gameservice {
   }
 
   async registerForAMatch(req) {
+    const userDetails = await this.userService.userDetails(req);
+
+    const query = {
+      $and: [{ _id: req.body.gameid }, { "players.player_id": req.user.id }],
+    };
+    const checkIfAlreadyRegistered = await this.gamesModel.findOne(query);
+    if (checkIfAlreadyRegistered) {
+      throw new Error("You have been already registered");
+    }
     try {
-      const userDetails = await this.userService.userDetails(req);
       const response = await this.googleDriveService.uploadFile(
         req.files.file,
         "gamePayment"
