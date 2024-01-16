@@ -8,6 +8,12 @@ const gameSchema = new Schema(
       type: String,
       required: true,
     },
+    paymentNo: {
+      type: String,
+    },
+    upiId: {
+      type: String,
+    },
     date: {
       type: String,
       required: true,
@@ -27,9 +33,6 @@ const gameSchema = new Schema(
     price: {
       type: Number,
       required: true,
-    },
-    upi_id: {
-      type: String,
     },
     players: [
       {

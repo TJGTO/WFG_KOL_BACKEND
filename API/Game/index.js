@@ -5,6 +5,7 @@ const {
   createGameSchema,
   addUpdatePlayerSchema,
   removePlayerSchema,
+  // registerPlayerSchema,
 } = require("./validationschema");
 
 const validateToken = require("../../utils/middlewares/validateToken");
@@ -34,6 +35,13 @@ router.get("/activematch", require("./activematches"));
 
 router.get("/details/:gameid", require("./matchdetails"));
 
-router.post("/register", validateToken, require("./registerInGame"));
+router.post(
+  "/register",
+  validateToken,
+  // requestValidator(registerPlayerSchema),
+  require("./registerInGame")
+);
+
+router.post("/updateGame", validateToken, require("./updateGame"));
 
 module.exports = router;

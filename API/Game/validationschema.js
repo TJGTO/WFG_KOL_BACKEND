@@ -46,8 +46,26 @@ const removePlayerSchema = yup.object({
   }),
 });
 
+// const registerPlayerSchema = yup.object({
+//   body: yup.object({
+//     position: yup
+//       .string()
+//       .oneOf(["Defence", "Midfield", "Attack", "Keeper"])
+//       .required("You must select a position"),
+//     gameid: yup.string().required(),
+//   }),
+//   files: yup.object({
+//     file: yup.mixed().test("isBlob", "Must be a Blob", (value) => {
+//       if (!(value instanceof Blob)) {
+//         return false;
+//       }
+//     }),
+//   }),
+// });
+
 module.exports = {
   createGameSchema,
   addUpdatePlayerSchema,
   removePlayerSchema,
+  // registerPlayerSchema,
 };

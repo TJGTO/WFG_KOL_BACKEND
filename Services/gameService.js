@@ -168,4 +168,16 @@ module.exports = class Gameservice {
       throw new Error("Failed to register");
     }
   }
+
+  async updateGame(data) {
+    try {
+      const updateDetails = await this.gamesModel.findOneAndUpdate(
+        { _id: data.body.gameid },
+        data.body
+      );
+      return "details updated";
+    } catch (error) {
+      throw new Error("Failed to update game");
+    }
+  }
 };
