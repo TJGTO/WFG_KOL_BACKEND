@@ -6,6 +6,8 @@ const {
   addUpdatePlayerSchema,
   removePlayerSchema,
   // registerPlayerSchema,
+  updateGameSchema,
+  updatePlayerInGameStatusSchema,
 } = require("./validationschema");
 
 const validateToken = require("../../utils/middlewares/validateToken");
@@ -42,10 +44,16 @@ router.post(
   require("./registerInGame")
 );
 
-router.post("/updateGame", validateToken, require("./updateGame"));
+router.post(
+  "/updateGame",
+  validateToken,
+  requestValidator(updateGameSchema),
+  require("./updateGame")
+);
 router.post(
   "/updatePlayerInGameStatus",
   validateToken,
+  requestValidator(updatePlayerInGameStatusSchema),
   require("./updatePlayerInGameStatus")
 );
 

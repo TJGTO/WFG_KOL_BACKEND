@@ -157,7 +157,7 @@ module.exports = class Gameservice {
       playerObj.phoneNumber = userDetails.phone_no;
       playerObj.name = userDetails.firstName + " " + userDetails.lastName;
       playerObj.position = req.body.position;
-      playerObj.payment_status = "Paid";
+      playerObj.status = "Paid";
       playerObj.age = this.userService.calculateAge(userDetails.DOB);
       const player = await this.gamesModel.findByIdAndUpdate(
         { _id: new ObjectId(req.body.gameid) },
@@ -192,7 +192,7 @@ module.exports = class Gameservice {
       };
       const update = {
         $set: {
-          "players.$.payment_status": "Approved",
+          "players.$.status": data.body.status,
         },
       };
       const playerStatus = await this.gamesModel.findOneAndUpdate(

@@ -63,9 +63,33 @@ const removePlayerSchema = yup.object({
 //   }),
 // });
 
+const upiIdPattern = "^[0-9A-Za-z.-]{2,256}@[A-Za-z]{2,64}$";
+const phoneRegex = /^(?:(?:0|91)?[6789]\d{9})$/;
+const updateGameSchema = yup.object({
+  body: yup.object({
+    gameid: yup.string().required("Please provide a valid game id"),
+    upiId: yup.string().matches(upiIdPattern, "Please enter a valid upi id"),
+    paymentNo: yup
+      .string()
+      .matches(phoneRegex, "Please provide a valid payment number")
+      .min(10)
+      .max(10),
+  }),
+});
+
+const updatePlayerInGameStatusSchema = yup.object({
+  body: yup.object({
+    gameId: yup.string().required("Please provide valid game id"),
+    playerId: yup.string().required("Please provide valid player id"),
+    status: yup.string().required("Please provide valid status"),
+  }),
+});
+
 module.exports = {
   createGameSchema,
   addUpdatePlayerSchema,
   removePlayerSchema,
   // registerPlayerSchema,
+  updateGameSchema,
+  updatePlayerInGameStatusSchema,
 };
