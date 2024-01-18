@@ -54,6 +54,9 @@ const gameSchema = new Schema(
         rating: {
           type: Number,
         },
+        payment_status: {
+          type: String,
+        },
         phoneNumber: {
           type: String,
         },

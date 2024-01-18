@@ -157,6 +157,7 @@ module.exports = class Gameservice {
       playerObj.phoneNumber = userDetails.phone_no;
       playerObj.name = userDetails.firstName + " " + userDetails.lastName;
       playerObj.position = req.body.position;
+      playerObj.payment_status = "Paid";
       playerObj.age = this.userService.calculateAge(userDetails.DOB);
       const player = await this.gamesModel.findByIdAndUpdate(
         { _id: new ObjectId(req.body.gameid) },
@@ -178,6 +179,28 @@ module.exports = class Gameservice {
       return "details updated";
     } catch (error) {
       throw new Error("Failed to update game");
+    }
+  }
+
+  async updatePlayerInGameStatus(data) {
+    try {
+      const query = {
+        $and: [
+          { _id: data.body.gameId },
+          { "players.player_id": data.body.playerId },
+        ],
+      };
+      const update = {
+        $set: {
+          "players.$.payment_status": "Approved",
+        },
+      };
+      const playerStatus = await this.gamesModel.findOneAndUpdate(
+        query,
+        update
+      );
+    } catch (error) {
+      throw new Error("Failed to update in game player status");
     }
   }
 };

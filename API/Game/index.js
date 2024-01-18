@@ -43,5 +43,10 @@ router.post(
 );
 
 router.post("/updateGame", validateToken, require("./updateGame"));
+router.post(
+  "/updatePlayerInGameStatus",
+  validateToken,
+  require("./updatePlayerInGameStatus")
+);
 
 module.exports = router;
