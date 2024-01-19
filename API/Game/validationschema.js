@@ -81,7 +81,13 @@ const updatePlayerInGameStatusSchema = yup.object({
   body: yup.object({
     gameId: yup.string().required("Please provide valid game id"),
     playerId: yup.string().required("Please provide valid player id"),
-    status: yup.string().required("Please provide valid status"),
+    status: yup
+      .string()
+      .required("Please provide valid status")
+      .oneOf(
+        ["Approved", "Rejected", "Withdrawn", "Removed", "Paid"],
+        "This is not a permitted status"
+      ),
   }),
 });
 

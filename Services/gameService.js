@@ -199,6 +199,8 @@ module.exports = class Gameservice {
         query,
         update
       );
+
+      return playerStatus;
     } catch (error) {
       throw new Error("Failed to update in game player status");
     }
