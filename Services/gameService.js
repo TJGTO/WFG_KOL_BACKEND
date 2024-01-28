@@ -216,7 +216,7 @@ module.exports = class Gameservice {
    * @returns - if success return operation status
    */
   async updateTeamsDetais(data) {
-    const { gameId, teams } = data.body;
+    const { gameId, teams, number_of_teams } = data.body;
     const game = await this.gamesModel.findById(gameId);
 
     if (!game) {
@@ -236,6 +236,7 @@ module.exports = class Gameservice {
           game.players[playerIndex].team = newTeam;
         }
       });
+      game.number_of_teams = number_of_teams;
       const updatedGame = await game.save();
 
       return "Update SUccessfull";
