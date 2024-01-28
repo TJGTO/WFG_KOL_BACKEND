@@ -182,6 +182,11 @@ module.exports = class Gameservice {
     }
   }
 
+  /**
+   *Update player status
+   * @param {*} data request body
+   * @returns - return updates status
+   */
   async updatePlayerInGameStatus(data) {
     try {
       const query = {
@@ -205,7 +210,11 @@ module.exports = class Gameservice {
       throw new Error("Failed to update in game player status");
     }
   }
-
+  /**
+   *Update Teams name for each player
+   * @param {*} data request body
+   * @returns - if success return operation status
+   */
   async updateTeamsDetais(data) {
     const { gameId, teams } = data.body;
     const game = await this.gamesModel.findById(gameId);
