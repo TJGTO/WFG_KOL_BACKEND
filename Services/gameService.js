@@ -205,4 +205,33 @@ module.exports = class Gameservice {
       throw new Error("Failed to update in game player status");
     }
   }
+
+  async updateTeamsDetais(data) {
+    const { gameId, teams } = data.body;
+    const game = await this.gamesModel.findById(gameId);
+
+    if (!game) {
+      throw new Error("Game not found");
+    }
+    try {
+      teams.forEach(async (team) => {
+        const { player_id, team: newTeam } = team;
+
+        // Find the player in the game's players array
+        const playerIndex = game.players.findIndex(
+          (player) => player.player_id.toString() === player_id
+        );
+
+        if (playerIndex !== -1) {
+          // Update the team for the player
+          game.players[playerIndex].team = newTeam;
+        }
+      });
+      const updatedGame = await game.save();
+
+      return "Update SUccessfull";
+    } catch (error) {
+      throw new Error("Failed to update Teams Details");
+    }
+  }
 };

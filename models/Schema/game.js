@@ -34,6 +34,9 @@ const gameSchema = new Schema(
       type: Number,
       required: true,
     },
+    number_of_teams: {
+      type: Number,
+    },
     players: [
       {
         name: {
@@ -42,6 +45,7 @@ const gameSchema = new Schema(
         player_id: {
           type: Schema.Types.ObjectId,
         },
+        team: { type: String },
         age: {
           type: String,
         },

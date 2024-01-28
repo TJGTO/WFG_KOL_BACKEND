@@ -57,4 +57,9 @@ router.post(
   require("./updatePlayerInGameStatus")
 );
 
+router.post(
+  "/updateTeamDetails",
+  validateToken,
+  require("./updateTeamDetails")
+);
 module.exports = router;
