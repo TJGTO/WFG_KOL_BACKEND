@@ -163,7 +163,6 @@ module.exports = class Gameservice {
         {
           $project: {
             _id: 0,
-            players: 0,
             createdAt: 0,
             updatedAt: 0,
             __v: 0,
