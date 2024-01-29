@@ -141,12 +141,47 @@ module.exports = class Gameservice {
 
   async matchDetails(req) {
     try {
-      const match = await this.gamesModel.findById({ _id: req.params.gameid });
-      const gameId = match._id;
-      delete match._id;
-      match.gameId = gameId;
-      return match;
+      const match = await this.gamesModel.aggregate([
+        {
+          $match: {
+            _id: new ObjectId(req.params.gameid),
+          },
+        },
+        {
+          $lookup: {
+            from: "venues",
+            localField: "venue",
+            foreignField: "_id",
+            as: "venueDetails",
+          },
+        },
+        {
+          $addFields: {
+            gameId: "$_id",
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            players: 0,
+            createdAt: 0,
+            updatedAt: 0,
+            __v: 0,
+            convertedDate: 0,
+          },
+        },
+      ]);
+
+      if (match.length === 0) {
+        throw new Error("Game not found");
+      }
+      const processedMatches = match.map((match) => {
+        const venueDetails = R.pathOr({}, ["venueDetails", 0], match);
+        return { ...match, venueDetails };
+      });
+      return processedMatches[0];
     } catch (error) {
+      console.log(error.message);
       throw new Error("Failed to fetch game details");
     }
   }
