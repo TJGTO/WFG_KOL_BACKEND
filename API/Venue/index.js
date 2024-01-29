@@ -3,6 +3,6 @@ const router = express.Router();
 const requestValidator = require("../../utils/middlewares/requestValidator");
 const validateToken = require("../../utils/middlewares/validateToken");
 
-router.get("/venueList", validateToken, require("./venueDetails"));
+router.get("/venueList", require("./venueDetails"));
 
 module.exports = router;

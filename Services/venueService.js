@@ -8,7 +8,15 @@ module.exports = class Venueservice {
   }
 
   async venueDetails() {
-    const allVenues = await this.venueModel.find({});
+    const allVenues = await this.venueModel.aggregate([
+      {
+        $project: {
+          venueId: "$_id",
+          fieldName: 1,
+          _id: 0,
+        },
+      },
+    ]);
     return allVenues;
   }
 };

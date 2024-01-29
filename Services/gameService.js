@@ -1,4 +1,5 @@
 const { ObjectId } = require("mongodb");
+const R = require("ramda");
 const { gameModel } = require("../models/Schema/game");
 const { UsersModel } = require("../models/Schema/users");
 const logger = require("../utils/loggerConfig");
@@ -97,6 +98,14 @@ module.exports = class Gameservice {
           },
         },
         {
+          $lookup: {
+            from: "venues",
+            localField: "venue",
+            foreignField: "_id",
+            as: "venueDetails",
+          },
+        },
+        {
           $project: {
             players: 0,
             createdAt: 0,
@@ -107,8 +116,19 @@ module.exports = class Gameservice {
           },
         },
       ]);
-      return activeMatches;
+
+      ///venueDetails will be an array , using ramda to make the array an object
+      //before venueDetails : [{...}] after venueDetails:{}
+
+      const processedMatches = activeMatches.map((match) => {
+        const venueDetails = R.pathOr({}, ["venueDetails", 0], match);
+        const updatedVenueDetails = R.omit(["location"], venueDetails);
+        return { ...match, venueDetails: updatedVenueDetails };
+      });
+
+      return processedMatches;
     } catch (error) {
+      console.log(error);
       throw new Error("Failed to fetch active matches");
     }
   }

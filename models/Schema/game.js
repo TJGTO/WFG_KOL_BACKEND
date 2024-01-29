@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const gameSchema = new Schema(
   {
     venue: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
     },
     paymentNo: {
