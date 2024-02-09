@@ -22,7 +22,8 @@ module.exports = class Gameservice {
    */
   async createGame(data) {
     try {
-      const result = await this.gamesModel.create(data);
+      data.body.createdBy = data.user.id;
+      const result = await this.gamesModel.create(data.body);
       this.logger.info(result);
       return result;
     } catch (error) {

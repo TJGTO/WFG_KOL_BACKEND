@@ -9,6 +9,11 @@ const usersSchema = new Schema({
   phone_no: { type: String },
   email: { type: String },
   profilePictureURL: { type: String },
+  roles: {
+    type: [String],
+    default: [],
+    required: true,
+  },
   address: {
     address_line_1: {
       type: String,

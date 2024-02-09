@@ -8,6 +8,10 @@ const gameSchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
     },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
     paymentNo: {
       type: String,
     },

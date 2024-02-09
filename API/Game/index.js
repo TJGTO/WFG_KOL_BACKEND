@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const requestValidator = require("../../utils/middlewares/requestValidator");
+const roleValidator = require("../../utils/middlewares/roleValidator");
 const {
   createGameSchema,
   addUpdatePlayerSchema,
@@ -15,6 +16,10 @@ const validateToken = require("../../utils/middlewares/validateToken");
 router.post(
   "/create",
   validateToken,
+  roleValidator(
+    ["Match Moderator", "Admin"],
+    "Currently, you do not have game moderator privileges. If you wish to become one, please send an email using your registered email ID for further assistance"
+  ),
   requestValidator(createGameSchema),
   require("./creategame")
 );

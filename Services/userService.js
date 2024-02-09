@@ -52,6 +52,7 @@ module.exports = class Userservice {
     const payload = {
       id: UserDetails.id,
       email: UserDetails.email,
+      roles: UserDetails.roles,
     };
     if (response) {
       const token = await jwt.sign(payload, process.env.Secret);
@@ -59,6 +60,7 @@ module.exports = class Userservice {
         token: token,
         email: UserDetails.email,
         fullname: UserDetails.firstName + " " + UserDetails.lastName,
+        roles: UserDetails.roles,
         profilePictureUrl: UserDetails.profilePictureURL
           ? UserDetails.profilePictureURL
           : null,
