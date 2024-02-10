@@ -5,8 +5,18 @@ const Schema = mongoose.Schema;
 const gameSchema = new Schema(
   {
     venue: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
+    paymentNo: {
+      type: String,
+    },
+    upiId: {
+      type: String,
     },
     date: {
       type: String,
@@ -28,8 +38,8 @@ const gameSchema = new Schema(
       type: Number,
       required: true,
     },
-    upi_id: {
-      type: String,
+    number_of_teams: {
+      type: Number,
     },
     players: [
       {
@@ -39,14 +49,22 @@ const gameSchema = new Schema(
         player_id: {
           type: Schema.Types.ObjectId,
         },
+        team: { type: String },
         age: {
           type: String,
         },
         profilepictureurl: {
           type: String,
         },
+        paymentImageurl: {
+          type: String,
+        },
         rating: {
           type: Number,
+        },
+        status: {
+          type: String,
+          enum: ["Approved", "Rejected", "Withdrawn", "Removed", "Paid"],
         },
         phoneNumber: {
           type: String,

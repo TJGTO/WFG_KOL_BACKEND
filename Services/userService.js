@@ -1,5 +1,6 @@
 var jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const moment = require("moment");
 const { UsersModel } = require("../models/Schema/users");
 const logger = require("../utils/loggerConfig");
 const GoogleDriveService = require("./gooleDriveService");
@@ -51,6 +52,7 @@ module.exports = class Userservice {
     const payload = {
       id: UserDetails.id,
       email: UserDetails.email,
+      roles: UserDetails.roles,
     };
     if (response) {
       const token = await jwt.sign(payload, process.env.Secret);
@@ -58,6 +60,7 @@ module.exports = class Userservice {
         token: token,
         email: UserDetails.email,
         fullname: UserDetails.firstName + " " + UserDetails.lastName,
+        roles: UserDetails.roles,
         profilePictureUrl: UserDetails.profilePictureURL
           ? UserDetails.profilePictureURL
           : null,
@@ -142,5 +145,12 @@ module.exports = class Userservice {
     } catch (error) {
       throw new Error("Failed to update the Profile Picture");
     }
+  }
+
+  calculateAge(dateOfBirth) {
+    const dob = moment(dateOfBirth, "YYYY-MM-DD");
+    const currentDate = moment();
+    const age = currentDate.diff(dob, "years");
+    return age;
   }
 };
