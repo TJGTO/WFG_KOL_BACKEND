@@ -196,6 +196,11 @@ module.exports = class Gameservice {
     if (checkIfAlreadyRegistered) {
       throw new Error("You have been already registered");
     }
+    if (!userDetails.age || !userDetails.address) {
+      throw new Error(
+        "Date of birth and address is necessary for game registration"
+      );
+    }
     try {
       const response = await this.googleDriveService.uploadFile(
         req.files.file,
