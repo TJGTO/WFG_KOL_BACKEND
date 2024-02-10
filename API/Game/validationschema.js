@@ -91,11 +91,18 @@ const updatePlayerInGameStatusSchema = yup.object({
   }),
 });
 
+const getPermissionSchema = yup.object({
+  params: yup.object({
+    gameid: yup.string().required("Please provide valid game id"),
+  }),
+});
+
 module.exports = {
   createGameSchema,
   addUpdatePlayerSchema,
   removePlayerSchema,
   // registerPlayerSchema,
   updateGameSchema,
+  getPermissionSchema,
   updatePlayerInGameStatusSchema,
 };

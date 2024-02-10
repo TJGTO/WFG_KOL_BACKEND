@@ -299,4 +299,30 @@ module.exports = class Gameservice {
       throw new Error("Failed to update Teams Details");
     }
   }
+
+  /**
+   *check and send permission matrix to frontend
+   * @param {*} data request body
+   * @returns - if success return operation matrix
+   */
+  async checkGamePermission(data) {
+    try {
+      let permissionMatrix = {
+        editSetting: false,
+        approveOrReject: false,
+        editTeam: false,
+      };
+      const setAllToTrue = R.map(R.T);
+      const matchDetails = await this.matchDetails(data);
+      const creatorId = new ObjectId(data.user.id);
+      if (creatorId.equals(matchDetails.createdBy)) {
+        const response = setAllToTrue(permissionMatrix);
+        return response;
+      } else {
+        return permissionMatrix;
+      }
+    } catch (error) {
+      throw new Error("Failed to get permission Matrix");
+    }
+  }
 };

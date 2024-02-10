@@ -8,6 +8,7 @@ const {
   removePlayerSchema,
   // registerPlayerSchema,
   updateGameSchema,
+  getPermissionSchema,
   updatePlayerInGameStatusSchema,
 } = require("./validationschema");
 
@@ -66,5 +67,12 @@ router.post(
   "/updateTeamDetails",
   validateToken,
   require("./updateTeamDetails")
+);
+
+router.get(
+  "/getPermissionMatrix/:gameid",
+  validateToken,
+  requestValidator(getPermissionSchema, true),
+  require("./getPermissionMatrix")
 );
 module.exports = router;
