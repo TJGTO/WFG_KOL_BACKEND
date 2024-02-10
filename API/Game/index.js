@@ -19,7 +19,7 @@ router.post(
   validateToken,
   roleValidator(
     ["Match Moderator", "Admin"],
-    "Currently, you do not have game moderator privileges. If you wish to become one, please send an email using your registered email ID for further assistance"
+    "Currently, you do not have game moderator privileges. If you wish to become one, please send an email using your registered email ID for further assistance."
   ),
   requestValidator(createGameSchema),
   require("./creategame")
