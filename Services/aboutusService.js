@@ -1,4 +1,4 @@
-const { AboutUsModel } = require("../models/Schema/aboutUs");
+const { AboutUsModel } = require("../models/Schema/aboutus");
 
 module.exports = class Aboutservice {
   constructor() {
