@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const moment = require("moment");
 const { UsersModel } = require("../models/Schema/users");
 const logger = require("../utils/loggerConfig");
+const AWSService = require("./amazonService");
 const GoogleDriveService = require("./gooleDriveService");
 
 module.exports = class Userservice {
@@ -10,6 +11,13 @@ module.exports = class Userservice {
     this.userModel = UsersModel;
     this.logger = logger;
     this.googleDriveService = new GoogleDriveService();
+    this.awsService = new AWSService(
+      {
+        accessKeyId: process.env.accessKeyId,
+        secretAccessKey: process.env.secretAccessKey,
+      },
+      process.env.bucketName
+    );
   }
   /**
    *create a user
@@ -117,9 +125,9 @@ module.exports = class Userservice {
       //get the user data details first
       const userDetails = await this.userDetails(data);
       //upload the file in drive
-      const response = await this.googleDriveService.uploadFile(
+      const response = await this.awsService.uploadFile(
         data.files.file,
-        "profilepicture"
+        process.env.profilePictureFolderName
       );
       if (!response.isSuccess) {
         throw Error("Failed to update the Profile Picture");
@@ -132,14 +140,14 @@ module.exports = class Userservice {
       await this.userModel.findOneAndUpdate(
         { _id: data.user.id },
         {
-          profilePictureURL: `https://drive.google.com/uc?export=view&id=${response.data.id}`,
+          profilePictureURL: response.data.publicUrl,
         }
       );
       //if old profile picture was there then get the id and delete it from drive
-      if (profileUrl) {
-        let fileId = profileUrl.split("=")[2];
-        await this.googleDriveService.deleteFile(fileId);
-      }
+      // if (profileUrl) {
+      //   let fileId = profileUrl.split("=")[2];
+      //   await this.googleDriveService.deleteFile(fileId);
+      // }
 
       return true;
     } catch (error) {
