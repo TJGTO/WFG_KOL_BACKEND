@@ -9,13 +9,13 @@ module.exports = class Stateservice {
    * @param {*} request
    * @returns
    */
+  //
   async getAllStates() {
-    try{
+    try {
       const allStates = await this.stateModel.find({});
       return allStates;
-    } catch(err) {
-      throw new Error("Failed to fetch states")
+    } catch (err) {
+      throw new Error("Failed to fetch states");
     }
   }
-
 };
