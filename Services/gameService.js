@@ -196,7 +196,7 @@ module.exports = class Gameservice {
     if (checkIfAlreadyRegistered) {
       throw new Error("You have been already registered");
     }
-    if (!userDetails.age || !userDetails.address) {
+    if (!userDetails.DOB || !userDetails.address) {
       throw new Error(
         "Date of birth and address is necessary for game registration"
       );
