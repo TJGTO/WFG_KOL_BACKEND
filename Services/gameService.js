@@ -212,7 +212,7 @@ module.exports = class Gameservice {
     try {
       const response = await this.awsService.uploadFile(
         req.files.file,
-        process.env.paymentpicturesFolderName
+        "paymentpictures/"
       );
       if (!response.isSuccess) {
         throw Error("Failed to upload the picture");
