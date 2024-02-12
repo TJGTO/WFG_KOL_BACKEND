@@ -125,8 +125,11 @@ module.exports = class Userservice {
       //get the user data details first
       const userDetails = await this.userDetails(data);
       //upload the file in drive
+      let fileObject = data.files.file;
+
+      fileObject.name = userDetails.firstName + "_" + userDetails.lastName;
       const response = await this.awsService.uploadFile(
-        data.files.file,
+        fileObject,
         process.env.profilePictureFolderName
       );
       if (!response.isSuccess) {
@@ -140,7 +143,7 @@ module.exports = class Userservice {
       await this.userModel.findOneAndUpdate(
         { _id: data.user.id },
         {
-          profilePictureURL: response.data.publicUrl,
+          profilePictureURL: response.data.fileName,
         }
       );
       //if old profile picture was there then get the id and delete it from drive

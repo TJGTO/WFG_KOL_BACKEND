@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const R = require("ramda");
+const AWSService = require("./amazonService");
 const { gameModel } = require("../models/Schema/game");
 const { UsersModel } = require("../models/Schema/users");
 const logger = require("../utils/loggerConfig");
@@ -13,6 +14,13 @@ module.exports = class Gameservice {
     this.logger = logger;
     this.googleDriveService = new GoogleDriveService();
     this.userService = new Userservice();
+    this.awsService = new AWSService(
+      {
+        accessKeyId: process.env.accessKeyId,
+        secretAccessKey: process.env.secretAccessKey,
+      },
+      process.env.bucketName
+    );
   }
 
   /**
@@ -202,9 +210,9 @@ module.exports = class Gameservice {
       );
     }
     try {
-      const response = await this.googleDriveService.uploadFile(
+      const response = await this.awsService.uploadFile(
         req.files.file,
-        "gamePayment"
+        process.env.paymentpicturesFolderName
       );
       if (!response.isSuccess) {
         throw Error("Failed to upload the picture");
@@ -212,7 +220,7 @@ module.exports = class Gameservice {
 
       const playerObj = {};
       playerObj.player_id = new ObjectId(req.user.id);
-      playerObj.paymentImageurl = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
+      playerObj.paymentImageurl = [response.data.fileName];
       playerObj.profilepictureurl = userDetails.profilePictureURL;
       playerObj.phoneNumber = userDetails.phone_no;
       playerObj.name = userDetails.firstName + " " + userDetails.lastName;

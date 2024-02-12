@@ -7,17 +7,19 @@ module.exports = class AWSService {
   }
   async uploadFile(fileObject, folderName) {
     try {
+      const { datePart, timePart } = this.getDateandTimeforFileName();
       const params = {
         Bucket: this.bucketName,
-        Key: folderName + fileObject.name,
+        Key: folderName + (fileObject.name + "_" + datePart + "_" + timePart),
         Body: fileObject.data,
       };
 
       const data = await this.uploadToS3(params);
       const publicUrl = data.Location;
+      const fileName = this.getonlyFileNameAfterUpload(publicUrl, folderName);
       return {
         isSuccess: true,
-        data: { publicUrl },
+        data: { publicUrl, fileName },
       };
     } catch (error) {
       return {
@@ -36,5 +38,16 @@ module.exports = class AWSService {
         }
       });
     });
+  }
+  getDateandTimeforFileName() {
+    const currentDateISOString = new Date().toISOString();
+    const [datePart, timePart] = currentDateISOString.split("T");
+    return {
+      datePart,
+      timePart,
+    };
+  }
+  getonlyFileNameAfterUpload(publicUrl, folderName) {
+    return publicUrl.split(folderName)[1];
   }
 };

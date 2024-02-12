@@ -57,7 +57,7 @@ const gameSchema = new Schema(
           type: String,
         },
         paymentImageurl: {
-          type: String,
+          type: [String],
         },
         rating: {
           type: Number,
