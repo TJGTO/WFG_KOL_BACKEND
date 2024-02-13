@@ -115,6 +115,14 @@ module.exports = class Gameservice {
           },
         },
         {
+          $lookup: {
+            from: "users",
+            localField: "createdBy",
+            foreignField: "_id",
+            as: "Creator",
+          },
+        },
+        {
           $project: {
             players: 0,
             createdAt: 0,
@@ -132,7 +140,16 @@ module.exports = class Gameservice {
       const processedMatches = activeMatches.map((match) => {
         const venueDetails = R.pathOr({}, ["venueDetails", 0], match);
         const updatedVenueDetails = R.omit(["location"], venueDetails);
-        return { ...match, venueDetails: updatedVenueDetails };
+        const CreatorDetails = R.pathOr({}, ["Creator", 0], match);
+        const UpdatedCreatorDetails = R.omit(
+          ["DOB", "address", "roles", "__v", "salt"],
+          CreatorDetails
+        );
+        return {
+          ...match,
+          venueDetails: updatedVenueDetails,
+          creator: UpdatedCreatorDetails,
+        };
       });
 
       return processedMatches;
@@ -165,6 +182,14 @@ module.exports = class Gameservice {
           },
         },
         {
+          $lookup: {
+            from: "users",
+            localField: "createdBy",
+            foreignField: "_id",
+            as: "Creator",
+          },
+        },
+        {
           $addFields: {
             gameId: "$_id",
           },
@@ -185,7 +210,12 @@ module.exports = class Gameservice {
       }
       const processedMatches = match.map((match) => {
         const venueDetails = R.pathOr({}, ["venueDetails", 0], match);
-        return { ...match, venueDetails };
+        const CreatorDetails = R.pathOr({}, ["Creator", 0], match);
+        const UpdatedCreatorDetails = R.omit(
+          ["DOB", "address", "roles", "__v", "salt"],
+          CreatorDetails
+        );
+        return { ...match, venueDetails, creator: UpdatedCreatorDetails };
       });
       return processedMatches[0];
     } catch (error) {
