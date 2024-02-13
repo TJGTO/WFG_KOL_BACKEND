@@ -41,6 +41,12 @@ const gameSchema = new Schema(
     number_of_teams: {
       type: Number,
     },
+    status: {
+      type: String,
+      enum: ["Inactive", "Active", "Cancelled", "Removed", "Completed"],
+      default: "Inactive",
+      required: true,
+    },
     players: [
       {
         name: {

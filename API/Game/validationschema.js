@@ -69,6 +69,13 @@ const updateGameSchema = yup.object({
   body: yup.object({
     gameid: yup.string().required("Please provide a valid game id"),
     upiId: yup.string().matches(upiIdPattern, "Please enter a valid upi id"),
+    status: yup
+      .string()
+      .required("Please provide valid status")
+      .oneOf(
+        ["Inactive", "Active", "Cancelled", "Removed", "Completed"],
+        "This is not a permitted status"
+      ),
     paymentNo: yup
       .string()
       .matches(phoneRegex, "Please provide a valid payment number")
