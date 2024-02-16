@@ -24,7 +24,7 @@ module.exports = class Gameservice {
     );
     this.twilioService = new TwilioService(
       "ACd19ca549dd0095d7090578a0d0c2058e",
-      "c77c269f16dd760984d05ba246dfbb3e"
+      "0fc7a1df4a70ff5bb6758c641ed6c1dc"
     );
   }
 
@@ -324,11 +324,11 @@ module.exports = class Gameservice {
         default:
           message = `In Game status has been changed by moderator of ${gameDetails.venueDetails.fieldName}`;
       }
-      // const message1 = await this.twilioService.sendMessage(
-      //   "+14155238886",
-      //   data.body.phoneNo,
-      //   message
-      // );
+      const message1 = await this.twilioService.sendMessage(
+        "+14155238886",
+        data.body.phoneNo,
+        message
+      );
       return playerStatus;
     } catch (error) {
       throw new Error("Failed to update in game player status");
