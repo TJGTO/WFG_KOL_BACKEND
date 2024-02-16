@@ -23,8 +23,8 @@ module.exports = class Gameservice {
       process.env.bucketName
     );
     this.twilioService = new TwilioService(
-      "ACd19ca549dd0095d7090578a0d0c2058e",
-      "0fc7a1df4a70ff5bb6758c641ed6c1dc"
+      process.env.twilioaccountSid,
+      process.env.twilioAuthtoken
     );
   }
 
