@@ -324,7 +324,7 @@ module.exports = class Gameservice {
         default:
           message = `In Game status has been changed by moderator of ${gameDetails.venueDetails.fieldName}`;
       }
-      const message1 = await this.twilioService.sendMessage(
+      this.twilioService.sendMessage(
         "+14155238886",
         data.body.phoneNo,
         message
