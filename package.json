@@ -26,6 +26,7 @@
     "mongoose": "^8.0.1",
     "nodemon": "^2.0.20",
     "ramda": "^0.28.0",
+    "twilio": "^4.22.0",
     "uuid": "^9.0.0",
     "winston": "^3.11.0",
     "winston-mongodb": "^5.1.1",

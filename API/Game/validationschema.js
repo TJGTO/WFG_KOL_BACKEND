@@ -88,6 +88,7 @@ const updatePlayerInGameStatusSchema = yup.object({
   body: yup.object({
     gameId: yup.string().required("Please provide valid game id"),
     playerId: yup.string().required("Please provide valid player id"),
+    phoneNo: yup.string().required("Please provide valid phoneNo"),
     status: yup
       .string()
       .required("Please provide valid status")

@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const R = require("ramda");
+const TwilioService = require("./twillioService");
 const AWSService = require("./amazonService");
 const { gameModel } = require("../models/Schema/game");
 const { UsersModel } = require("../models/Schema/users");
@@ -20,6 +21,10 @@ module.exports = class Gameservice {
         secretAccessKey: process.env.secretAccessKey,
       },
       process.env.bucketName
+    );
+    this.twilioService = new TwilioService(
+      "ACd19ca549dd0095d7090578a0d0c2058e",
+      "c77c269f16dd760984d05ba246dfbb3e"
     );
   }
 
@@ -298,11 +303,32 @@ module.exports = class Gameservice {
           "players.$.status": data.body.status,
         },
       };
+      const gameDetails = await this.matchDetails({
+        params: { gameid: data.body.gameId },
+      });
       const playerStatus = await this.gamesModel.findOneAndUpdate(
         query,
         update
       );
-
+      let message = "";
+      switch (data.body.status) {
+        case "Approved":
+          message = `The game moderator has approved your slot of ${gameDetails.venueDetails.fieldName}`;
+          break;
+        case "Rejected":
+          message = `The game moderator has approved your slot ${gameDetails.venueDetails.fieldName}`;
+          break;
+        case "Removed":
+          message = `The game moderator has removed you from the game of ${gameDetails.venueDetails.fieldName}`;
+          break;
+        default:
+          message = `In Game status has been changed by moderator of ${gameDetails.venueDetails.fieldName}`;
+      }
+      const message1 = await this.twilioService.sendMessage(
+        "+14155238886",
+        data.body.phoneNo,
+        message
+      );
       return playerStatus;
     } catch (error) {
       throw new Error("Failed to update in game player status");
