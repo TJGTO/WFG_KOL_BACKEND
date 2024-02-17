@@ -140,7 +140,7 @@ module.exports = class Gameservice {
       ]);
 
       ///venueDetails will be an array , using ramda to make the array an object
-      //before venueDetails : [{...}] after venueDetails:{}
+      //before venueDetails : [{...}] after venueDetails:{} fnfmm
 
       const processedMatches = activeMatches.map((match) => {
         const venueDetails = R.pathOr({}, ["venueDetails", 0], match);
