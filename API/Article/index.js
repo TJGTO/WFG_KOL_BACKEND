@@ -10,7 +10,7 @@ router.post(
   "/create",
   validateToken,
   roleValidator(
-    ["Content Creator"],
+    ["Content Creator", "Admin"],
     "You don't have permission to write article on WFG Kol"
   ),
   requestValidator(createArticleSchema),
