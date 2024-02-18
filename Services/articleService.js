@@ -1,7 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { articleModel } = require("../models/Schema/article");
 const { ObjectId } = require("mongodb");
-const formatCreatedAt = require("../utils/functions");
+const formatDate = require("../utils/functions");
 
 module.exports = class Articleservice {
   constructor() {
@@ -36,7 +36,7 @@ module.exports = class Articleservice {
           $project: {
             _id: 1,
             title: 1,
-            createdAt: "$createdAt",
+            createdAt: 1,
             createdBy: {
               $concat: ["$userDetails.firstName", " ", "$userDetails.lastName"],
             },
@@ -44,8 +44,9 @@ module.exports = class Articleservice {
           },
         },
       ]);
-      formatCreatedAt(activeArtciles);
-
+      activeArtciles.forEach((x) => {
+        x.createdAt = formatDate(x.createdAt, "DD MMM YYYY");
+      });
       return activeArtciles;
     } catch (error) {
       throw new Error("Unable to fetch article details");
@@ -76,8 +77,8 @@ module.exports = class Articleservice {
             _id: 1,
             title: 1,
             description: 1,
-            createdAt: "$createdAt",
-            updatedAt: "$updatedAt",
+            createdAt: 1,
+            updatedAt: 1,
             creator: {
               _id: "$userDetails._id",
               fullName: {
@@ -99,7 +100,10 @@ module.exports = class Articleservice {
       if (article.length == 0) {
         throw new Error();
       }
-      formatCreatedAt(article);
+      article.forEach((x) => {
+        x.createdAt = formatDate(x.createdAt, "DD MMM YYYY");
+        x.updatedAt = formatDate(x.createdAt, "DD MMM YYYY");
+      });
 
       return article[0];
     } catch (error) {

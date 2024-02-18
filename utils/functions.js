@@ -1,9 +1,8 @@
 const moment = require("moment");
 
-function formatCreatedAt(article) {
-  article.forEach((item) => {
-    item.createdAt = moment(item.createdAt).format("DD MMM YYYY");
-  });
+function formatDate(date, outputFormatdate) {
+  const formattedDate = moment(date).format(outputFormatdate);
+  return formattedDate;
 }
 
-module.exports = formatCreatedAt;
+module.exports = formatDate;
