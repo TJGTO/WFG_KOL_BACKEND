@@ -77,8 +77,16 @@ module.exports = class Articleservice {
             title: 1,
             description: 1,
             createdAt: "$createdAt",
+            updatedAt: "$updatedAt",
             creator: {
               _id: "$userDetails._id",
+              fullName: {
+                $concat: [
+                  "$userDetails.firstName",
+                  " ",
+                  "$userDetails.lastName",
+                ],
+              },
               firstName: "$userDetails.firstName",
               lastName: "$userDetails.lastName",
               profilePictureURL: "$userDetails.profilePictureURL",
@@ -88,9 +96,12 @@ module.exports = class Articleservice {
         },
       ]);
 
+      if (article.length == 0) {
+        throw new Error();
+      }
       formatCreatedAt(article);
 
-      return article;
+      return article[0];
     } catch (error) {
       throw new Error("Unable to fetch intended article");
     }
