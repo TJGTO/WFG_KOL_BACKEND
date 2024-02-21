@@ -157,6 +157,34 @@ module.exports = class Userservice {
       throw new Error("Failed to update the Profile Picture");
     }
   }
+  /**
+   *Seach users by username , searching done on fullname , and not case sensitive
+   * @param {*} data
+   * @returns - search results
+   */
+  async searchUserByName(data) {
+    try {
+      let searchResults = await this.userModel.aggregate([
+        {
+          $project: {
+            fullName: { $concat: ["$firstName", " ", "$lastName"] },
+            firstName: 1,
+            lastName: 1,
+            profilePictureURL: 1,
+            phone_no: 1,
+          },
+        },
+        {
+          $match: {
+            fullName: { $regex: data.userName, $options: "i" },
+          },
+        },
+      ]);
+      return searchResults;
+    } catch (error) {
+      throw new Error("Failed to fetch the users");
+    }
+  }
 
   calculateAge(dateOfBirth) {
     const dob = moment(dateOfBirth, "YYYY-MM-DD");

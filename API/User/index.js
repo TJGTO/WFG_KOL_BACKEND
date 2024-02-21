@@ -34,5 +34,6 @@ router.patch(
   validateToken,
   require("./uploadProfilePicture")
 );
+router.post("/search", validateToken, require("./searchUsers"));
 
 module.exports = router;
