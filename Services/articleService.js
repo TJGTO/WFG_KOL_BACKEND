@@ -152,4 +152,88 @@ module.exports = class Articleservice {
       throw new Error("Failed tp update comments");
     }
   }
+  /**
+   * Fetches all comments for a given article, including user information for commenters and those who replied.
+   *
+   * @param {string} articleId The ID of the article to fetch comments for.
+   * @returns {object} An object containing the success status, a message, and the comments data.
+   */
+  async fetchArticleComments(articleId) {
+    try {
+      const article = await this.articleModel.findById(articleId);
+      if (!article) {
+        return {
+          success: false,
+          message: "Article not found",
+        };
+      }
+
+      const commentsWithUserInfo = await this.articleModel.aggregate([
+        { $match: { _id: new ObjectId(articleId) } },
+        { $unwind: "$comments" },
+        {
+          $lookup: {
+            from: "users",
+            localField: "comments.commentBy",
+            foreignField: "_id",
+            as: "commentBy",
+          },
+        },
+        { $unwind: "$commentBy" },
+        {
+          $lookup: {
+            from: "users",
+            localField: "comments.replyComments.commentBy",
+            foreignField: "_id",
+            as: "replyCommentBy",
+          },
+        },
+        {
+          $addFields: {
+            "comments.replyComments.commentBy": {
+              $map: {
+                input: "$replyCommentBy",
+                as: "replyUser",
+                in: {
+                  _id: "$$replyUser._id",
+                  fullName: {
+                    $concat: [
+                      "$$replyUser.firstName",
+                      " ",
+                      "$$replyUser.lastName",
+                    ],
+                  },
+                  profilePictureURL: "$$replyUser.profilePictureURL",
+                },
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: "$comments._id",
+            text: "$comments.text",
+            commentId: "$comments.commentId",
+            commentBy: {
+              _id: "$commentBy._id",
+              fullName: {
+                $concat: ["$commentBy.firstName", " ", "$commentBy.lastName"],
+              },
+              profilePictureURL: "$commentBy.profilePictureURL",
+            },
+            replyComments: "$comments.replyComments",
+          },
+        },
+      ]);
+
+      return {
+        success: true,
+        message: "Successfull",
+        data: commentsWithUserInfo,
+      };
+    } catch (error) {
+      console.error("Error fetching article comments:", error);
+      throw error;
+    }
+  }
 };
