@@ -157,10 +157,13 @@ module.exports = class Userservice {
       throw new Error("Failed to update the Profile Picture");
     }
   }
+
   /**
-   *Seach users by username , searching done on fullname , and not case sensitive
-   * @param {*} data
-   * @returns - search results
+   * Searches for users by their name.
+   *
+   * @param {Object} data The search criteria.
+   * @param {string} data.userName The name of the user to search for.
+   * @returns {Promise<Array<Object>>} An array of users that match the search criteria.
    */
   async searchUserByName(data) {
     try {
