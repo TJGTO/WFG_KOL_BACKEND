@@ -53,6 +53,12 @@ module.exports = class Articleservice {
     }
   }
 
+  /**
+   * Fetches and formats an individual article by ID.
+   *
+   * @param {object} data The request data containing the article ID.
+   * @returns {object} The formatted article object.
+   */
   async individualArticle(data) {
     try {
       const article = await this.articleModel.aggregate([
@@ -108,6 +114,42 @@ module.exports = class Articleservice {
       return article[0];
     } catch (error) {
       throw new Error("Unable to fetch intended article");
+    }
+  }
+
+  /**
+   * Adds a new comment to an article.
+   *
+   * @param {object} data The request data containing the article ID, comment text, and parent comment ID (if applicable).
+   * @returns {string} A success message.
+   */
+  async addComments(data) {
+    try {
+      const { articleId, text, parentId } = data.body;
+      const Article = await this.articleModel.findById(articleId);
+      let commentObj = {
+        text: text,
+        commentBy: data.user.id,
+      };
+      if (parentId) {
+        let CommentArrIdx = Article.comments.findIndex(
+          (x) => x.commentId == parentId
+        );
+        if (Article.comments[CommentArrIdx].replyComments) {
+          commentObj.commentId =
+            Article.comments[CommentArrIdx].replyComments.length + 1;
+        } else {
+          commentObj.commentId = 1;
+        }
+        Article.comments[CommentArrIdx].replyComments.push(commentObj);
+      } else {
+        commentObj.commentId = Article.comments.length + 1;
+        Article.comments.push(commentObj);
+      }
+      const updatedArticle = await Article.save();
+      return "Success";
+    } catch (error) {
+      throw new Error("Failed tp update comments");
     }
   }
 };

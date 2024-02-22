@@ -19,4 +19,6 @@ router.post(
 router.get("/allArticles", require("./activeArticle"));
 router.get("/allArticles/:articleId", require("./individualArticle"));
 
+router.post("/updateComment", validateToken, require("./updateComment"));
+
 module.exports = router;

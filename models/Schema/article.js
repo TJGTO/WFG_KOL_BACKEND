@@ -15,7 +15,40 @@ const articleSchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
     },
+    comments: [
+      {
+        commentId: {
+          type: String,
+          required: true,
+        },
+        text: {
+          type: String,
+          required: true,
+        },
+        commentBy: {
+          type: Schema.Types.ObjectId,
+          required: true,
+        },
+        replyComments: [
+          {
+            commentId: {
+              type: String,
+              required: true,
+            },
+            text: {
+              type: String,
+              required: true,
+            },
+            commentBy: {
+              type: Schema.Types.ObjectId,
+              required: true,
+            },
+          },
+        ],
+      },
+    ],
   },
+
   { timestamps: true }
 );
 
