@@ -7,7 +7,12 @@ module.exports = class Articleservice {
   constructor() {
     this.articleModel = articleModel;
   }
-
+  /**
+   * Creates a new article.
+   *
+   * @param {object} data The article data to be created.
+   * @returns {object} The created article.
+   */
   async createArticle(data) {
     try {
       data.body.createdBy = new ObjectId(data.user.id);
