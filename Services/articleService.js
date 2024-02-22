@@ -17,7 +17,11 @@ module.exports = class Articleservice {
       throw new Error("Failed to create article");
     }
   }
-
+  /**
+   * Fetches all active articles, including user information for the author.
+   *
+   * @returns {object} An object containing the success status, a message, and the articles data.
+   */
   async activeArticle() {
     try {
       const activeArtciles = await this.articleModel.aggregate([
@@ -191,19 +195,20 @@ module.exports = class Articleservice {
         {
           $addFields: {
             "comments.replyComments.commentBy": {
-              $map: {
-                input: "$replyCommentBy",
-                as: "replyUser",
+              $let: {
+                vars: {
+                  firstReplyCommentBy: { $arrayElemAt: ["$replyCommentBy", 0] },
+                },
                 in: {
-                  _id: "$$replyUser._id",
+                  _id: "$$firstReplyCommentBy._id",
                   fullName: {
                     $concat: [
-                      "$$replyUser.firstName",
+                      "$$firstReplyCommentBy.firstName",
                       " ",
-                      "$$replyUser.lastName",
+                      "$$firstReplyCommentBy.lastName",
                     ],
                   },
-                  profilePictureURL: "$$replyUser.profilePictureURL",
+                  profilePictureURL: "$$firstReplyCommentBy.profilePictureURL",
                 },
               },
             },

@@ -8,6 +8,6 @@ module.exports = catchAsync(async (req, res, next) => {
   if (!payload.success) {
     responseHandler(false, payload, res, payload.message, 404);
   } else {
-    responseHandler(true, payload, res, payload.message, 200);
+    responseHandler(true, payload.data, res, payload.message, 200);
   }
 });
