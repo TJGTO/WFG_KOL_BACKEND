@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { articleModel } = require("../models/Schema/article");
 const { ObjectId } = require("mongodb");
+const R = require("ramda");
 const formatDate = require("../utils/functions");
 
 module.exports = class Articleservice {
@@ -178,8 +179,14 @@ module.exports = class Articleservice {
       }
 
       const commentsWithUserInfo = await this.articleModel.aggregate([
-        { $match: { _id: new ObjectId(articleId) } },
-        { $unwind: "$comments" },
+        {
+          $match: {
+            _id: new ObjectId(articleId),
+          },
+        },
+        {
+          $unwind: "$comments",
+        },
         {
           $lookup: {
             from: "users",
@@ -188,58 +195,83 @@ module.exports = class Articleservice {
             as: "commentBy",
           },
         },
-        { $unwind: "$commentBy" },
+        {
+          $unwind: "$commentBy",
+        },
+        {
+          $unwind: {
+            path: "$comments.replyComments",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
         {
           $lookup: {
             from: "users",
             localField: "comments.replyComments.commentBy",
             foreignField: "_id",
-            as: "replyCommentBy",
+            as: "comments.replyComments.commentBy",
           },
         },
         {
-          $addFields: {
-            "comments.replyComments.commentBy": {
-              $let: {
-                vars: {
-                  firstReplyCommentBy: { $arrayElemAt: ["$replyCommentBy", 0] },
-                },
-                in: {
-                  _id: "$$firstReplyCommentBy._id",
-                  fullName: {
-                    $concat: [
-                      "$$firstReplyCommentBy.firstName",
-                      " ",
-                      "$$firstReplyCommentBy.lastName",
-                    ],
-                  },
-                  profilePictureURL: "$$firstReplyCommentBy.profilePictureURL",
-                },
-              },
-            },
+          $unwind: {
+            path: "$comments.replyComments.commentBy",
+            preserveNullAndEmptyArrays: true,
           },
         },
         {
           $project: {
-            _id: "$comments._id",
-            text: "$comments.text",
             commentId: "$comments.commentId",
-            commentBy: {
-              _id: "$commentBy._id",
-              fullName: {
-                $concat: ["$commentBy.firstName", " ", "$commentBy.lastName"],
-              },
-              profilePictureURL: "$commentBy.profilePictureURL",
+            text: "$comments.text",
+            "commentBy._id": "$commentBy._id",
+            "commentBy.profilePictureURL": "$commentBy.profilePictureURL",
+            "commentBy.fullName": {
+              $concat: ["$commentBy.firstName", " ", "$commentBy.lastName"],
             },
-            replyComments: "$comments.replyComments",
+            "replyComments.commentId": "$comments.replyComments.commentId",
+            "replyComments.text": "$comments.replyComments.text",
+            "replyComments.commentBy._id":
+              "$comments.replyComments.commentBy._id",
+            "replyComments.commentBy.profilePictureURL":
+              "$comments.replyComments.commentBy.profilePictureURL",
+            "replyComments.commentBy.fullName": {
+              $concat: [
+                "$comments.replyComments.commentBy.firstName",
+                " ",
+                "$comments.replyComments.commentBy.lastName",
+              ],
+            },
           },
         },
       ]);
+      const groupByCommentId = R.reduceBy(
+        (acc, current) =>
+          R.evolve(
+            {
+              text: R.always(current.text),
+              commentId: R.always(current.commentId),
+              commentBy: R.always(current.commentBy),
+              replyComments: R.append(current.replyComments),
+            },
+            acc
+          ),
+        { text: "", commentBy: {}, commentId: "", replyComments: [] },
+        R.prop("commentId")
+      );
+
+      const groupedData = R.compose(
+        R.values,
+        R.map((group) =>
+          R.evolve(
+            { replyComments: R.reject(R.propEq("text", undefined)) },
+            group
+          )
+        )
+      )(groupByCommentId(commentsWithUserInfo));
 
       return {
         success: true,
         message: "Successfull",
-        data: commentsWithUserInfo,
+        data: groupedData,
       };
     } catch (error) {
       console.error("Error fetching article comments:", error);
