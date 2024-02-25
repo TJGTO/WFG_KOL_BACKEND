@@ -23,6 +23,27 @@ module.exports = class Articleservice {
       throw new Error("Failed to create article");
     }
   }
+
+  async updateArticle(data) {
+    const isValiduser = data.body.createdBy === data.user.id ? true : false;
+    try {
+      if (isValiduser) {
+        const updatedArticle = await this.articleModel.findOneAndUpdate(
+          { _id: data.body.articleId },
+          data.body
+        );
+      } else {
+        return {
+          message: "You are not authorised to update this article",
+        };
+      }
+      return {
+        message: "Article succesfully updated",
+      };
+    } catch (error) {
+      throw new Error("Unable to update article");
+    }
+  }
   /**
    * Fetches all active articles, including user information for the author.
    *

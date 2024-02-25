@@ -16,6 +16,7 @@ router.post(
   requestValidator(createArticleSchema),
   require("./createArticle")
 );
+router.post("/update", validateToken, require("./updateArticle"));
 router.get("/allArticles", require("./activeArticle"));
 router.get("/allArticles/:articleId", require("./individualArticle"));
 router.get("/comments/:articleId", require("./getComments"));
