@@ -4,7 +4,10 @@ const requestValidator = require("../../utils/middlewares/requestValidator");
 const validateToken = require("../../utils/middlewares/validateToken");
 const roleValidator = require("../../utils/middlewares/roleValidator");
 
-const { createArticleSchema } = require("./validationschema");
+const {
+  createArticleSchema,
+  updateArticleSchema,
+} = require("./validationschema");
 
 router.post(
   "/create",
@@ -16,10 +19,20 @@ router.post(
   requestValidator(createArticleSchema),
   require("./createArticle")
 );
-router.post("/update", validateToken, require("./updateArticle"));
+router.post(
+  "/update",
+  validateToken,
+  requestValidator(updateArticleSchema),
+  require("./updateArticle")
+);
 router.get("/allArticles", require("./activeArticle"));
 router.get("/allArticles/:articleId", require("./individualArticle"));
 router.get("/comments/:articleId", require("./getComments"));
 router.post("/updateComment", validateToken, require("./updateComment"));
+router.get(
+  "/permissionMatrix/:articleId",
+  validateToken,
+  require("./permissionMatrix")
+);
 
 module.exports = router;
