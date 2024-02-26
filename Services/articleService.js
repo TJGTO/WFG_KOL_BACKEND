@@ -24,6 +24,37 @@ module.exports = class Articleservice {
     }
   }
   /**
+   * Updates an article.
+   *
+   * @param {object} data The request body.
+   * @param {string} data.body.articleId The ID of the article to be updated.
+   * @param {string} data.body.createdBy The ID of the user who created the article.
+   * @param {string} data.user.id The ID of the currently logged in user.
+   * @returns {object} A success or error message.
+   */
+  async updateArticle(data) {
+    const isValiduser = data.body.createdBy === data.user.id ? true : false;
+    try {
+      if (isValiduser) {
+        const updatedArticle = await this.articleModel.findOneAndUpdate(
+          { _id: data.body.articleId },
+          data.body
+        );
+      } else {
+        return {
+          success: false,
+          message: "You are not authorised to update this article",
+        };
+      }
+      return {
+        success: true,
+        message: "Article succesfully updated",
+      };
+    } catch (error) {
+      throw new Error("Unable to update article");
+    }
+  }
+  /**
    * Fetches all active articles, including user information for the author.
    *
    * @returns {object} An object containing the success status, a message, and the articles data.
@@ -276,6 +307,32 @@ module.exports = class Articleservice {
     } catch (error) {
       console.error("Error fetching article comments:", error);
       throw error;
+    }
+  }
+  /**
+   * Checks the permissions of a user for a given article.
+   *
+   * @param {object} data The request body.
+   * @param {string} data.user.id The ID of the currently logged in user.
+   * @returns {object} A permission matrix for the user.
+   */
+  async checkGamePermission(data) {
+    try {
+      let permissionMatrix = {
+        editArticle: false,
+        approveOrReject: false,
+      };
+      const setAllToTrue = R.map(R.T);
+      const articleDetails = await this.individualArticle(data);
+      const creatorId = new ObjectId(data.user.id);
+      if (creatorId.equals(articleDetails.creator._id)) {
+        const response = setAllToTrue(permissionMatrix);
+        return response;
+      } else {
+        return permissionMatrix;
+      }
+    } catch (error) {
+      throw new Error("Failed to get permission Matrix");
     }
   }
 };

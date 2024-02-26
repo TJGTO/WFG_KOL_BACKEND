@@ -273,6 +273,37 @@ module.exports = class Gameservice {
     }
   }
 
+  async registerInGroup(data) {
+    try {
+      const game = await this.gamesModel.findById(data.body.gameid);
+      const playerIds = [];
+      let count = 0;
+      for (let i = 0; i <= game.players.length - 1; i++) {
+        playerIds.push(game.players[i].player_id.toString());
+      }
+
+      data.body.players.forEach((x) => {
+        if (!playerIds.includes(x.player_id)) {
+          game.players.push(x);
+          count++;
+        }
+      });
+      if (count == 0) {
+        return {
+          success: false,
+          message: "There is no new player to be added",
+        };
+      }
+      await game.save();
+      return {
+        success: true,
+        message: "Success",
+      };
+    } catch (error) {
+      throw new Error("Unable to register in group");
+    }
+  }
+
   async updateGame(data) {
     try {
       const updateDetails = await this.gamesModel.findOneAndUpdate(
