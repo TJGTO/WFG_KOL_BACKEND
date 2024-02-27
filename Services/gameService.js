@@ -283,7 +283,9 @@ module.exports = class Gameservice {
       }
 
       data.body.players.forEach((x) => {
-        if (!playerIds.includes(x.player_id)) {
+        if (!playerIds.includes(x._id)) {
+          x.player_id = x._id;
+          x.age = this.userService.calculateAge(x.DOB);
           game.players.push(x);
           count++;
         }

@@ -170,16 +170,18 @@ module.exports = class Userservice {
       let searchResults = await this.userModel.aggregate([
         {
           $project: {
-            fullName: { $concat: ["$firstName", " ", "$lastName"] },
+            _id: 1,
+            name: { $concat: ["$firstName", " ", "$lastName"] },
             firstName: 1,
             lastName: 1,
-            profilePictureURL: 1,
-            phone_no: 1,
+            profilepictureurl: "$profilePictureURL",
+            phoneNumber: "$phone_no",
+            DOB: 1,
           },
         },
         {
           $match: {
-            fullName: { $regex: data.userName, $options: "i" },
+            name: { $regex: data.userName, $options: "i" },
           },
         },
       ]);

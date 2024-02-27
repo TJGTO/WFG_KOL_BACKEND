@@ -70,6 +70,8 @@ const gameSchema = new Schema(
         },
         status: {
           type: String,
+          default: "Paid",
+          required: true,
           enum: ["Approved", "Rejected", "Withdrawn", "Removed", "Paid"],
         },
         phoneNumber: {
