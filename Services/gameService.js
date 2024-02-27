@@ -228,7 +228,13 @@ module.exports = class Gameservice {
       throw new Error("Failed to fetch game details");
     }
   }
-
+  /**
+   * Registers a user for a game.
+   *
+   * @param {Object} req The request object.
+   * @returns {Promise<Object>} The registered player object.
+   * @throws {Error} If the user is already registered, or if the user's date of birth or address is not provided.
+   */
   async registerForAMatch(req) {
     const userDetails = await this.userService.userDetails(req);
 
@@ -272,7 +278,12 @@ module.exports = class Gameservice {
       throw new Error("Failed to register");
     }
   }
-
+  /**
+   * Registers new players in a game.
+   *
+   * @param {object} data The request body containing the game ID and player data.
+   * @returns {object} A success or error message.
+   */
   async registerInGroup(data) {
     try {
       const game = await this.gamesModel.findById(data.body.gameid);
@@ -305,7 +316,12 @@ module.exports = class Gameservice {
       throw new Error("Unable to register in group");
     }
   }
-
+  /**
+   * Updates a game's details.
+   *
+   * @param {object} data The request body containing the game's details.
+   * @returns {string} A success message.
+   */
   async updateGame(data) {
     try {
       const updateDetails = await this.gamesModel.findOneAndUpdate(
