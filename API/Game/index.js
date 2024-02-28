@@ -50,8 +50,13 @@ router.post(
   require("./registerInGame")
 );
 
-router.post("/registerInGroup", require("./registerIngroup"));
+router.post("/registerInGroup", validateToken, require("./registerIngroup"));
 
+router.post(
+  "/updatepaymentsforAddedPlayers",
+  validateToken,
+  require("./updatepaymentsforAddedPlayers")
+);
 router.post(
   "/updateGame",
   validateToken,

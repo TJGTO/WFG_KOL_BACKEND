@@ -316,6 +316,53 @@ module.exports = class Gameservice {
       throw new Error("Unable to register in group");
     }
   }
+
+  async updatePaymentsSnapAfterAddedByAdmin(data) {
+    try {
+      const { gameid, player_id, position } = data.body;
+      const game = await this.gamesModel.findById(gameid);
+
+      if (!game) {
+        return {
+          success: false,
+          message: "Not able to find the Game",
+        };
+      }
+
+      const playerIndex = game.players.findIndex(
+        (x) => x.player_id == player_id
+      );
+      if (!playerIndex) {
+        return {
+          success: false,
+          message: "Not able to find the Player in the game",
+        };
+      }
+
+      const response = await this.awsService.uploadFile(
+        data.files.file,
+        "paymentpictures/"
+      );
+      if (!response.isSuccess) {
+        return {
+          success: false,
+          message: "Not able to upload the payment picture",
+        };
+      }
+      game.players[playerIndex].position = position;
+      game.players[playerIndex].paymentImageurl = [
+        response.data.fileName,
+        ...game.players[playerIndex].paymentImageurl,
+      ];
+      await game.save();
+      return {
+        success: true,
+        message: "Updated successfully",
+      };
+    } catch (error) {
+      throw new Error("Failed to upload");
+    }
+  }
   /**
    * Updates a game's details.
    *
