@@ -200,4 +200,52 @@ module.exports = class Userservice {
     const age = currentDate.diff(dob, "years");
     return age;
   }
+  /**
+   * Updates the password of a user.
+   *
+   * @param {object} data The request body containing the user's email and new password.
+   * @returns {object} A response object indicating the success or failure of the operation.
+   */
+  async changePassword(data) {
+    try {
+      const user = await this.userModel.find({ email: data.body.email });
+      if (!user || user.length == 0) {
+        return {
+          success: false,
+          message: "User not found with this email",
+        };
+      }
+      const response = await bcrypt
+        .compare(data.body.oldpassword, user[0].password)
+        .then((res) => true)
+        .catch((err) => false);
+
+      if (!response) {
+        return {
+          success: false,
+          message: "Your entered the old password wrong",
+        };
+      }
+
+      const hashsalt = bcrypt.genSaltSync(10);
+      const hashedPassword = bcrypt.hashSync(data.body.newpassword, hashsalt);
+
+      const result = await this.userModel.findOneAndUpdate(
+        { email: data.body.email },
+        {
+          salt: hashsalt,
+          password: hashedPassword,
+        },
+        {
+          new: true,
+        }
+      );
+      return {
+        success: true,
+        message: "Password Updated Successfully",
+      };
+    } catch (error) {
+      throw new Error("Failed to update the password");
+    }
+  }
 };

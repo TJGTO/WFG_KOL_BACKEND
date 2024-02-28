@@ -5,6 +5,7 @@ const {
   createUserSchema,
   loginvalidationschema,
   updateuserschema,
+  changePasswordSchema,
 } = require("./validationSchema");
 const validateToken = require("../../utils/middlewares/validateToken");
 
@@ -35,5 +36,11 @@ router.patch(
   require("./uploadProfilePicture")
 );
 router.post("/search", validateToken, require("./searchUsers"));
+
+router.post(
+  "/changePassword",
+  requestValidator(changePasswordSchema),
+  require("./changePassword")
+);
 
 module.exports = router;

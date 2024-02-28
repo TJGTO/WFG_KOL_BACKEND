@@ -27,6 +27,13 @@ const loginvalidationschema = yup.object({
   }),
 });
 
+const changePasswordSchema = yup.object({
+  body: yup.object({
+    email: yup.string().required("Please enter email"),
+    oldpassword: yup.string().required("Please enter old password"),
+    newpassword: yup.string().required("Please enter new password"),
+  }),
+});
 const updateuserschema = yup.object().shape({
   body: yup.object({
     facebook: yup.string(),
@@ -46,4 +53,9 @@ const updateuserschema = yup.object().shape({
   }),
 });
 
-module.exports = { createUserSchema, loginvalidationschema, updateuserschema };
+module.exports = {
+  createUserSchema,
+  loginvalidationschema,
+  updateuserschema,
+  changePasswordSchema,
+};
