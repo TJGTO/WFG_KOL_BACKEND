@@ -316,7 +316,17 @@ module.exports = class Gameservice {
       throw new Error("Unable to register in group");
     }
   }
-
+  /**
+   * Updates the payment snap after it has been added by the admin.
+   *
+   * @param {object} data The request data.
+   * @param {string} data.body.gameid The game ID.
+   * @param {string} data.body.player_id The player ID.
+   * @param {string} data.body.position The position of the player.
+   * @param {object} data.files.file The payment picture file.
+   *
+   * @returns {object} The response object.
+   */
   async updatePaymentsSnapAfterAddedByAdmin(data) {
     try {
       const { gameid, player_id, position } = data.body;
@@ -332,7 +342,7 @@ module.exports = class Gameservice {
       const playerIndex = game.players.findIndex(
         (x) => x.player_id == player_id
       );
-      if (!playerIndex) {
+      if (playerIndex < 0) {
         return {
           success: false,
           message: "Not able to find the Player in the game",
@@ -350,6 +360,7 @@ module.exports = class Gameservice {
         };
       }
       game.players[playerIndex].position = position;
+      game.players[playerIndex].status = "Paid";
       game.players[playerIndex].paymentImageurl = [
         response.data.fileName,
         ...game.players[playerIndex].paymentImageurl,
@@ -480,12 +491,20 @@ module.exports = class Gameservice {
       const setAllToTrue = R.map(R.T);
       const matchDetails = await this.matchDetails(data);
       const creatorId = new ObjectId(data.user.id);
+      let response;
       if (creatorId.equals(matchDetails.createdBy)) {
-        const response = setAllToTrue(permissionMatrix);
-        return response;
+        response = setAllToTrue(permissionMatrix);
       } else {
-        return permissionMatrix;
+        response = JSON.parse(JSON.stringify(permissionMatrix));
       }
+      const index = matchDetails.players.findIndex(
+        (x) => x.player_id == data.user.id
+      );
+      if (index >= 0) {
+        response.player_id = data.user.id;
+      }
+
+      return response;
     } catch (error) {
       throw new Error("Failed to get permission Matrix");
     }

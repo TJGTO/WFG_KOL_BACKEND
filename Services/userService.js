@@ -177,11 +177,14 @@ module.exports = class Userservice {
             profilepictureurl: "$profilePictureURL",
             phoneNumber: "$phone_no",
             DOB: 1,
+            address: 1,
           },
         },
         {
           $match: {
             name: { $regex: data.userName, $options: "i" },
+            DOB: { $exists: true },
+            address: { $exists: true },
           },
         },
       ]);
