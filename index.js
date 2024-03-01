@@ -29,7 +29,7 @@ const transporter = nodemailer.createTransport({
   secure: false, // Use `true` for port 465, `false` for all other ports
   auth: {
     user: "tathagata5121@gmail.com",
-    pass: "barh uemq kapx zdes",
+    pass: process.env.mailPassword,
   },
 });
 
@@ -45,7 +45,7 @@ app.get("/sendEmail", async (req, res) => {
     res.send(info.messageId);
   } catch (error) {
     console.log(error);
-    res.send("Failed");
+    res.send(`Failed ${process.env.mailPassword}`);
   }
 });
 
