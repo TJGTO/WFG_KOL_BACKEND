@@ -5,6 +5,13 @@ module.exports = class AWSService {
     this.s3 = new AWS.S3(awsConfig);
     this.bucketName = bucketName;
   }
+  /**
+   * Uploads a file to an S3 bucket.
+   *
+   * @param {Object} fileObject The file object to upload.
+   * @param {string} folderName The name of the folder to upload the file to.
+   * @returns {Promise<{isSuccess: boolean, data: {publicUrl: string, fileName: string} | Error}>} A promise that resolves to an object containing the public URL of the uploaded file and the file name, or an error if the upload failed.
+   */
   async uploadFile(fileObject, folderName) {
     try {
       const { datePart, timePart } = this.getDateandTimeforFileName();
