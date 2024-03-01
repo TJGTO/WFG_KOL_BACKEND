@@ -7,7 +7,7 @@ const logger = createLogger({
   defaultMeta: { service: "user-service" },
   transports: [
     new transports.MongoDB({
-      db: "mongodb+srv://prac-dev:OK9q7tGDvlAAWVJb@cluster0.j9dfvp2.mongodb.net/wfgKol?retryWrites=true&w=majority",
+      db: process.env.DATABASE_STREAM,
       collection: "logs",
       options: { useNewUrlParser: true, useUnifiedTopology: true },
     }),

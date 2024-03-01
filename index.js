@@ -23,31 +23,5 @@ app.get("/", (req, res) => {
   res.send("Welcome");
 });
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // Use `true` for port 465, `false` for all other ports
-  auth: {
-    user: "tathagata5121@gmail.com",
-    pass: process.env.mailPassword,
-  },
-});
-
-app.get("/sendEmail", async (req, res) => {
-  try {
-    const info = await transporter.sendMail({
-      from: "tathagata5121@gmail.com", // sender address
-      to: "asamanjakasundi@gmail.com", // list of receivers
-      subject: "Hello ✔", // Subject line
-      text: "Hello world?", // plain text body
-      html: "<b>Hello world?</b>", // html body
-    });
-    res.send(info.messageId);
-  } catch (error) {
-    console.log(error);
-    res.send(`Failed ${process.env.mailPassword}`);
-  }
-});
-
 app.use(globalErrorHandler);
 app.listen(8000, () => console.log("connected"));
