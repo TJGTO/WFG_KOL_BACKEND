@@ -1,6 +1,8 @@
 var jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const moment = require("moment");
+// const CsvParser = require("json2csv").Parser;
+const Exceljs = require("exceljs");
 const { UsersModel } = require("../models/Schema/users");
 const logger = require("../utils/loggerConfig");
 const AWSService = require("./amazonService");
@@ -246,6 +248,63 @@ module.exports = class Userservice {
       };
     } catch (error) {
       throw new Error("Failed to update the password");
+    }
+  }
+
+  async exportUser() {
+    try {
+      const usersWithDOB = [];
+      const usersWithoutDOB = [];
+      const usersData = await this.userModel.find({});
+      usersData.forEach((user) => {
+        const { firstName, lastName, phone_no, email, DOB } = user;
+        if (DOB) {
+          usersWithDOB.push({ firstName, lastName, phone_no, email, DOB });
+        } else {
+          usersWithoutDOB.push({ firstName, lastName, phone_no, email });
+        }
+      });
+
+      const workBook = new Exceljs.Workbook();
+
+      const workSheetWithDOB = workBook.addWorksheet("Users with DOB");
+      const workSheetWithoutDOB = workBook.addWorksheet("Users without DOB");
+
+      const headersWithDOB = [
+        "First Name",
+        "Last Name",
+        "Phone Number",
+        "Email",
+        "DOB",
+      ];
+
+      const headersWithoutDOB = [
+        "First Name",
+        "Last Name",
+        "Phone Number",
+        "Email",
+      ];
+
+      workSheetWithDOB.addRow(headersWithDOB);
+      workSheetWithoutDOB.addRow(headersWithoutDOB);
+
+      usersWithDOB.forEach((user) =>
+        workSheetWithDOB.addRow(Object.values(user))
+      );
+      usersWithoutDOB.forEach((user) =>
+        workSheetWithoutDOB.addRow(Object.values(user))
+      );
+
+      const filePathWithDOB = "users_with_DOB";
+      const filePathWithoutDOB = "users_without_DOB";
+
+      await workBook.xlsx.writeFile(filePathWithDOB);
+      await workBook.xlsx.writeFile(filePathWithoutDOB);
+
+      return { filePathWithDOB, filePathWithoutDOB };
+    } catch (error) {
+      this.logger.info(error);
+      throw new Error("Unable to export users details");
     }
   }
 };

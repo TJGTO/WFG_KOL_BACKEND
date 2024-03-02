@@ -43,4 +43,6 @@ router.post(
   require("./changePassword")
 );
 
+router.get("/exportUsersDetails", require("./exportUsers"));
+
 module.exports = router;
