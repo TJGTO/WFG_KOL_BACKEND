@@ -47,6 +47,11 @@ const gameSchema = new Schema(
       default: "Inactive",
       required: true,
     },
+    matchType: {
+      type: String,
+      enum: ["Match", "Tournament"],
+      required: true,
+    },
     players: [
       {
         name: {
@@ -87,6 +92,12 @@ const gameSchema = new Schema(
         position: {
           type: String,
           enum: ["Defence", "Midfield", "Attack", "Keeper"],
+        },
+        foodtype: {
+          type: String,
+        },
+        player_type: {
+          type: String,
         },
       },
     ],
