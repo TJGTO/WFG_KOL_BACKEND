@@ -236,21 +236,40 @@ module.exports = class Gameservice {
    * @throws {Error} If the user is already registered, or if the user's date of birth or address is not provided.
    */
   async registerForAMatch(req) {
-    const userDetails = await this.userService.userDetails(req);
-
-    const query = {
-      $and: [{ _id: req.body.gameid }, { "players.player_id": req.user.id }],
-    };
-    const checkIfAlreadyRegistered = await this.gamesModel.findOne(query);
-    if (checkIfAlreadyRegistered) {
-      throw new Error("You have been already registered");
-    }
-    if (!userDetails.DOB || !userDetails.address) {
-      throw new Error(
-        "Date of birth and address is necessary for game registration"
-      );
-    }
     try {
+      const userDetails = await this.userService.userDetails(req);
+
+      const query = {
+        $and: [{ _id: req.body.gameid }, { "players.player_id": req.user.id }],
+      };
+      const checkIfAlreadyRegistered = await this.gamesModel.findOne(query);
+      if (checkIfAlreadyRegistered) {
+        return {
+          success: false,
+          message: "You have been already registered",
+        };
+      }
+      if (!userDetails.DOB) {
+        return {
+          success: false,
+          message: "Date of birth is necessary for registration",
+        };
+      }
+      if (!userDetails.address) {
+        return {
+          success: false,
+          message: "Address is necessary for registration",
+        };
+      }
+      if (
+        !userDetails.profilePictureURL &&
+        req.body.matchType == "Tournament"
+      ) {
+        return {
+          success: false,
+          message: "Profile Picture is necessary for tournament registration",
+        };
+      }
       const response = await this.awsService.uploadFile(
         req.files.file,
         "paymentpictures/"
@@ -268,12 +287,20 @@ module.exports = class Gameservice {
       playerObj.position = req.body.position;
       playerObj.status = "Paid";
       playerObj.age = this.userService.calculateAge(userDetails.DOB);
+      if (req.body.matchType && req.body.matchType == "Tournament") {
+        playerObj.foodtype = req.body.foodtype;
+        playerObj.player_type = req.body.player_type;
+      }
       const player = await this.gamesModel.findByIdAndUpdate(
         { _id: new ObjectId(req.body.gameid) },
         { $push: { players: playerObj } }
       );
 
-      return player;
+      return {
+        success: true,
+        message: "Registration is successfull",
+        data: player,
+      };
     } catch (error) {
       throw new Error("Failed to register");
     }
@@ -329,7 +356,8 @@ module.exports = class Gameservice {
    */
   async updatePaymentsSnapAfterAddedByAdmin(data) {
     try {
-      const { gameid, player_id, position } = data.body;
+      const { gameid, player_id, position, matchType, foodtype, player_type } =
+        data.body;
       const game = await this.gamesModel.findById(gameid);
 
       if (!game) {
@@ -365,6 +393,10 @@ module.exports = class Gameservice {
         response.data.fileName,
         ...game.players[playerIndex].paymentImageurl,
       ];
+      if (matchType && matchType == "Tournament") {
+        game.players[playerIndex].foodtype = foodtype;
+        game.players[playerIndex].player_type = player_type;
+      }
       await game.save();
       return {
         success: true,
