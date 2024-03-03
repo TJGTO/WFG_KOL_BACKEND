@@ -8,6 +8,8 @@ const logger = require("../utils/loggerConfig");
 const GoogleDriveService = require("./gooleDriveService");
 const Userservice = require("./userService");
 const EmailService = require("./emailService");
+const { approvedSlotEmail } = require("../templates/emailtemp");
+const formatDate = require("../utils/functions");
 
 module.exports = class Gameservice {
   constructor() {
@@ -473,7 +475,7 @@ module.exports = class Gameservice {
         gameDetails.matchType == "Tournament" &&
         data.body.status == "Approved"
       ) {
-        this.sendEmailtoUser(data.body.playerId);
+        this.sendEmailtoUser(data.body.playerId, "WFT 6.0", gameDetails.date);
       }
 
       return playerStatus;
@@ -568,19 +570,23 @@ module.exports = class Gameservice {
     };
   }
 
-  async sendEmailtoUser(userId) {
+  async sendEmailtoUser(userId, matchname, date) {
     if (userId) {
       let userDetails = await this.usersModel.findById(userId);
       if (userDetails.email) {
         let smtpConfig = this.createSmtpConfigforEmail();
         const emailService = new EmailService(smtpConfig);
-
         const emailOptions = {
-          from: process.env.adminEmailId, // Sender address
-          to: userDetails.email, // Recipient address
-          subject: "Hello ✔", // Subject line
-          text: "Hello world?", // Plain text body
-          html: "<b>Hello world?</b>", // HTML body
+          from: process.env.adminEmailId,
+          to: userDetails.email,
+          subject: approvedSlotEmail.subject.replace(
+            "{{matchName}}",
+            matchname
+          ),
+          text: "",
+          html: approvedSlotEmail.html
+            .replace("{{firstName}}", userDetails.firstName)
+            .replace("{{date}}", date),
         };
         try {
           await emailService.sendEmail(emailOptions);
