@@ -7,6 +7,7 @@ const { UsersModel } = require("../models/Schema/users");
 const logger = require("../utils/loggerConfig");
 const GoogleDriveService = require("./gooleDriveService");
 const Userservice = require("./userService");
+const EmailService = require("./emailService");
 
 module.exports = class Gameservice {
   constructor() {
@@ -463,11 +464,18 @@ module.exports = class Gameservice {
         default:
           message = `In Game status has been changed by moderator of ${gameDetails.venueDetails.fieldName}`;
       }
-      this.twilioService.sendMessage(
-        "+14155238886",
-        data.body.phoneNo,
-        message
-      );
+      // this.twilioService.sendMessage(
+      //   "+14155238886",
+      //   data.body.phoneNo,
+      //   message
+      // );
+      if (
+        gameDetails.matchType == "Tournament" &&
+        data.body.status == "Approved"
+      ) {
+        this.sendEmailtoUser(data.body.playerId);
+      }
+
       return playerStatus;
     } catch (error) {
       throw new Error("Failed to update in game player status");
@@ -539,6 +547,48 @@ module.exports = class Gameservice {
       return response;
     } catch (error) {
       throw new Error("Failed to get permission Matrix");
+    }
+  }
+  /**
+   * Creates an SMTP configuration object for sending emails.
+   *
+   * @returns {{host: string, port: number, secure: boolean, auth: {user: string, pass: string}}} An SMTP configuration object.
+   */
+  createSmtpConfigforEmail() {
+    const envpassword = process.env.adminEmailPassword;
+    const modifiedPass = envpassword.split("_").join(" ");
+    return {
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // Use `true` for port 465, `false` for all other ports
+      auth: {
+        user: process.env.adminEmailId,
+        pass: modifiedPass,
+      },
+    };
+  }
+
+  async sendEmailtoUser(userId) {
+    if (userId) {
+      let userDetails = await this.usersModel.findById(userId);
+      if (userDetails.email) {
+        let smtpConfig = this.createSmtpConfigforEmail();
+        const emailService = new EmailService(smtpConfig);
+
+        const emailOptions = {
+          from: process.env.adminEmailId, // Sender address
+          to: userDetails.email, // Recipient address
+          subject: "Hello ✔", // Subject line
+          text: "Hello world?", // Plain text body
+          html: "<b>Hello world?</b>", // HTML body
+        };
+        try {
+          await emailService.sendEmail(emailOptions);
+        } catch (error) {
+          console.log(error);
+          this.logger.info(error);
+        }
+      }
     }
   }
 };
