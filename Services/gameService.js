@@ -569,7 +569,13 @@ module.exports = class Gameservice {
       },
     };
   }
-
+  /**
+   * Sends an email to the user with the specified user ID, match name, and date.
+   *
+   * @param {string} userId The ID of the user to send the email to.
+   * @param {string} matchname The name of the match.
+   * @param {string} date The date of the match.
+   */
   async sendEmailtoUser(userId, matchname, date) {
     if (userId) {
       let userDetails = await this.usersModel.findById(userId);

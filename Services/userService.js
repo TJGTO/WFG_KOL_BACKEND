@@ -1,6 +1,7 @@
 var jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const moment = require("moment");
+const R = require("ramda");
 // const CsvParser = require("json2csv").Parser;
 const Exceljs = require("exceljs");
 const { UsersModel } = require("../models/Schema/users");
@@ -104,13 +105,25 @@ module.exports = class Userservice {
    */
   async userDetails(data) {
     try {
-      const user = await this.userModel.findById({ _id: data.user.id });
+      let userid = "";
+      let cansaveProfilePicture = false;
+      if (data.params.userid) {
+        userid = data.params.userid;
+        if (data.params.userid == data.user.id) {
+          cansaveProfilePicture = true;
+        }
+      } else {
+        cansaveProfilePicture = true;
+        userid = data.user.id;
+      }
+      const user = await this.userModel.findById({ _id: userid });
       if (!user) {
         throw Error("User profile not found");
       }
       const userObj = JSON.parse(JSON.stringify(user));
       delete userObj.password;
       delete userObj.salt;
+      userObj.cansaveProfilePicture = cansaveProfilePicture;
       return userObj;
     } catch (error) {
       throw new Error("Failed to fetch user profile details");
@@ -250,7 +263,23 @@ module.exports = class Userservice {
       throw new Error("Failed to update the password");
     }
   }
-
+  async permissionsForProfile(data) {
+    try {
+      let permissionMatrix = {
+        editProfile: false,
+      };
+      const setAllToTrue = R.map(R.T);
+      if (data.user.id == data.params.userid) {
+        const response = setAllToTrue(permissionMatrix);
+        return response;
+      } else {
+        return permissionMatrix;
+      }
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to get permission Matrix");
+    }
+  }
   async exportUser() {
     try {
       const usersWithDOB = [];

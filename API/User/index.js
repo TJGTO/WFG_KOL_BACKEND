@@ -30,6 +30,8 @@ router.patch(
 
 router.get("/userdetails", validateToken, require("./userDetails"));
 
+router.get("/userdetails/:userid", validateToken, require("./userDetails"));
+
 router.patch(
   "/userPrfoilePicture",
   validateToken,
@@ -44,5 +46,11 @@ router.post(
 );
 
 router.get("/exportUsersDetails", require("./exportUsers"));
+
+router.get(
+  "/profilepermission/:userid",
+  validateToken,
+  require("./getProfilePermission")
+);
 
 module.exports = router;
