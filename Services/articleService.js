@@ -140,6 +140,8 @@ module.exports = class Articleservice {
               profilePictureURL: "$userDetails.profilePictureURL",
               about: "$userDetails.about",
             },
+            likesCount: { $size: "$likes" },
+            dislikesCount: { $size: "$dislikes" },
           },
         },
       ]);
@@ -335,15 +337,63 @@ module.exports = class Articleservice {
       throw new Error("Failed to get permission Matrix");
     }
   }
+  /**
+   * Updates the likes or dislikes of an article.
+   *
+   * @param {Object} data The request body.
+   * @param {string} data.body.articleId The ID of the article.
+   * @param {string} data.body.flag The flag indicating whether to like or dislike the article.
+   * @param {Object} data.user The user object.
+   * @param {string} data.user.id The ID of the user.
+   * @returns {string} A success message.
+   */
+  async likeorDislikeapost(data) {
+    try {
+      let filterObj = {
+        _id: new ObjectId(data.body.articleId),
+      };
+      let pullObj = {};
+      let pushObj = {};
+      if (data.body.flag == "dislike") {
+        filterObj = {
+          ...filterObj,
+          dislikes: { $ne: data.user.id },
+        };
+        pullObj = {
+          ...pullObj,
+          likes: data.user.id,
+        };
+        pushObj = {
+          ...pushObj,
+          dislikes: data.user.id,
+        };
+      }
 
-  async likeorDislikeapost() {
-    // db.articles.updateOne(
-    //   { _id: ObjectId("article_id"), likes: { $ne: "user_id" } },
-    //   {
-    //     $pull: { dislikes: "user_id" },
-    //     $push: { likes: "user_id" },
-    //   }
-    // );
+      if (data.body.flag == "like") {
+        filterObj = {
+          ...filterObj,
+          likes: { $ne: data.user.id },
+        };
+        pullObj = {
+          ...pullObj,
+          dislikes: data.user.id,
+        };
+        pushObj = {
+          ...pushObj,
+          likes: data.user.id,
+        };
+      }
+
+      await this.articleModel.updateOne(filterObj, {
+        $pull: pullObj,
+        $push: pushObj,
+      });
+      return "success";
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to update");
+    }
+
     // db.articles.updateOne(
     //   { _id: ObjectId("article_id"), dislikes: { $ne: "user_id" } },
     //   {

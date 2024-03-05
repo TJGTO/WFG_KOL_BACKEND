@@ -7,6 +7,7 @@ const roleValidator = require("../../utils/middlewares/roleValidator");
 const {
   createArticleSchema,
   updateArticleSchema,
+  updatelikeDislikechema,
 } = require("./validationschema");
 
 router.post(
@@ -33,6 +34,13 @@ router.get(
   "/permissionMatrix/:articleId",
   validateToken,
   require("./permissionMatrix")
+);
+
+router.post(
+  "/likedislike",
+  validateToken,
+  requestValidator(updatelikeDislikechema),
+  require("./updatelikedislike")
 );
 
 module.exports = router;
