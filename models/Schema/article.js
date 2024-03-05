@@ -47,6 +47,14 @@ const articleSchema = new Schema(
         ],
       },
     ],
+    likes: {
+      type: [String],
+      required: true,
+    },
+    dislikes: {
+      type: [String],
+      required: true,
+    },
   },
 
   { timestamps: true }

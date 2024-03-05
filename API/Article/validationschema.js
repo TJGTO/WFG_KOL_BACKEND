@@ -15,7 +15,15 @@ const updateArticleSchema = yup.object({
     createdBy: yup.string().required("createdBy is required"),
   }),
 });
+
+const updatelikeDislikechema = yup.object({
+  body: yup.object({
+    articleId: yup.string().required("Airticle Id is required"),
+    flag: yup.string().required("Flag is required"),
+  }),
+});
 module.exports = {
   createArticleSchema,
   updateArticleSchema,
+  updatelikeDislikechema,
 };

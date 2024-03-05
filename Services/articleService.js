@@ -140,6 +140,10 @@ module.exports = class Articleservice {
               profilePictureURL: "$userDetails.profilePictureURL",
               about: "$userDetails.about",
             },
+            likesCount: { $size: "$likes" },
+            dislikesCount: { $size: "$dislikes" },
+            likes: 1,
+            dislikes: 1,
           },
         },
       ]);
@@ -324,6 +328,12 @@ module.exports = class Articleservice {
       };
       const setAllToTrue = R.map(R.T);
       const articleDetails = await this.individualArticle(data);
+      if (articleDetails.likes.includes(data.user.id)) {
+        permissionMatrix.liked = true;
+      }
+      if (articleDetails.dislikes.includes(data.user.id)) {
+        permissionMatrix.disliked = true;
+      }
       const creatorId = new ObjectId(data.user.id);
       if (creatorId.equals(articleDetails.creator._id)) {
         const response = setAllToTrue(permissionMatrix);
@@ -332,7 +342,81 @@ module.exports = class Articleservice {
         return permissionMatrix;
       }
     } catch (error) {
+      console.log(error);
       throw new Error("Failed to get permission Matrix");
+    }
+  }
+  /**
+   * Updates the likes or dislikes of an article.
+   *
+   * @param {Object} data The request body.
+   * @param {string} data.body.articleId The ID of the article.
+   * @param {string} data.body.flag The flag indicating whether to like or dislike the article.
+   * @param {Object} data.user The user object.
+   * @param {string} data.user.id The ID of the user.
+   * @returns {string} A success message.
+   */
+  async likeorDislikeapost(data) {
+    try {
+      let filterObj = {
+        _id: new ObjectId(data.body.articleId),
+      };
+      let pullObj = {};
+      let pushObj = {};
+      if (data.body.flag == "dislike") {
+        filterObj = {
+          ...filterObj,
+          dislikes: { $ne: data.user.id },
+        };
+        pullObj = {
+          ...pullObj,
+          likes: data.user.id,
+        };
+        pushObj = {
+          ...pushObj,
+          dislikes: data.user.id,
+        };
+      }
+
+      if (data.body.flag == "like") {
+        filterObj = {
+          ...filterObj,
+          likes: { $ne: data.user.id },
+        };
+        pullObj = {
+          ...pullObj,
+          dislikes: data.user.id,
+        };
+        pushObj = {
+          ...pushObj,
+          likes: data.user.id,
+        };
+      }
+
+      const updatedArticle = await this.articleModel.findOneAndUpdate(
+        filterObj,
+        {
+          $pull: pullObj,
+          $push: pushObj,
+        },
+        { new: true }
+      );
+      if (updatedArticle) {
+        return {
+          success: true,
+          likesCount: updatedArticle.likes.length,
+          dislikesCount: updatedArticle.dislikes.length,
+          message: "updated successfully",
+        };
+      } else {
+        return {
+          success: false,
+          message: "Nothing to update",
+        };
+      }
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to update");
     }
   }
 };
