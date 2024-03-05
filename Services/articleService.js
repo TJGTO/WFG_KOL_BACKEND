@@ -142,6 +142,8 @@ module.exports = class Articleservice {
             },
             likesCount: { $size: "$likes" },
             dislikesCount: { $size: "$dislikes" },
+            likes: 1,
+            dislikes: 1,
           },
         },
       ]);
@@ -326,6 +328,12 @@ module.exports = class Articleservice {
       };
       const setAllToTrue = R.map(R.T);
       const articleDetails = await this.individualArticle(data);
+      if (articleDetails.likes.includes(data.user.id)) {
+        permissionMatrix.liked = true;
+      }
+      if (articleDetails.dislikes.includes(data.user.id)) {
+        permissionMatrix.disliked = true;
+      }
       const creatorId = new ObjectId(data.user.id);
       if (creatorId.equals(articleDetails.creator._id)) {
         const response = setAllToTrue(permissionMatrix);
@@ -334,6 +342,7 @@ module.exports = class Articleservice {
         return permissionMatrix;
       }
     } catch (error) {
+      console.log(error);
       throw new Error("Failed to get permission Matrix");
     }
   }
@@ -384,11 +393,27 @@ module.exports = class Articleservice {
         };
       }
 
-      await this.articleModel.updateOne(filterObj, {
-        $pull: pullObj,
-        $push: pushObj,
-      });
-      return "success";
+      const updatedArticle = await this.articleModel.findOneAndUpdate(
+        filterObj,
+        {
+          $pull: pullObj,
+          $push: pushObj,
+        },
+        { new: true }
+      );
+      if (updatedArticle) {
+        return {
+          success: true,
+          likesCount: updatedArticle.likes.length,
+          dislikesCount: updatedArticle.dislikes.length,
+          message: "updated successfully",
+        };
+      } else {
+        return {
+          success: false,
+          message: "Nothing to update",
+        };
+      }
     } catch (error) {
       console.log(error);
       throw new Error("Failed to update");
