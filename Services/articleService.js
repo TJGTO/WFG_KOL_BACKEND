@@ -335,4 +335,21 @@ module.exports = class Articleservice {
       throw new Error("Failed to get permission Matrix");
     }
   }
+
+  async likeorDislikeapost() {
+    // db.articles.updateOne(
+    //   { _id: ObjectId("article_id"), likes: { $ne: "user_id" } },
+    //   {
+    //     $pull: { dislikes: "user_id" },
+    //     $push: { likes: "user_id" },
+    //   }
+    // );
+    // db.articles.updateOne(
+    //   { _id: ObjectId("article_id"), dislikes: { $ne: "user_id" } },
+    //   {
+    //     $pull: { likes: "user_id" },
+    //     $push: { dislikes: "user_id" },
+    //   }
+    // );
+  }
 };
