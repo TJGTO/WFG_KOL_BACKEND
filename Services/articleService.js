@@ -393,13 +393,5 @@ module.exports = class Articleservice {
       console.log(error);
       throw new Error("Failed to update");
     }
-
-    // db.articles.updateOne(
-    //   { _id: ObjectId("article_id"), dislikes: { $ne: "user_id" } },
-    //   {
-    //     $pull: { likes: "user_id" },
-    //     $push: { dislikes: "user_id" },
-    //   }
-    // );
   }
 };
