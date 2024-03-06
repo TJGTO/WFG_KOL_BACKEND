@@ -393,6 +393,27 @@ module.exports = class Articleservice {
         };
       }
 
+      if (data.body.flag == "outlike") {
+        filterObj = {
+          ...filterObj,
+          likes: { $eq: data.user.id },
+        };
+        pullObj = {
+          ...pullObj,
+          likes: data.user.id,
+        };
+      }
+      if (data.body.flag == "outdislike") {
+        filterObj = {
+          ...filterObj,
+          dislikes: { $eq: data.user.id },
+        };
+        pullObj = {
+          ...pullObj,
+          dislikes: data.user.id,
+        };
+      }
+
       const updatedArticle = await this.articleModel.findOneAndUpdate(
         filterObj,
         {
