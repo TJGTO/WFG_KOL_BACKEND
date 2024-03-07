@@ -52,6 +52,16 @@ const gameSchema = new Schema(
       enum: ["Match", "Tournament"],
       required: true,
     },
+    paymentOptions: [
+      {
+        paymentType: {
+          type: String,
+        },
+        price: {
+          type: Number,
+        },
+      },
+    ],
     players: [
       {
         name: {
