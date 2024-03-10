@@ -8,6 +8,7 @@ const {
   changePasswordSchema,
 } = require("./validationSchema");
 const validateToken = require("../../utils/middlewares/validateToken");
+const roleValidator = require("../../utils/middlewares/roleValidator");
 
 router.post(
   "/create",
@@ -45,7 +46,11 @@ router.post(
   require("./changePassword")
 );
 
-router.get("/exportUsersDetails", require("./exportUsers"));
+router.get(
+  "/exportUsersDetails",
+  roleValidator(["Admin"], "You don't have admin access"),
+  require("./exportUsers")
+);
 
 router.get(
   "/profilepermission/:userid",

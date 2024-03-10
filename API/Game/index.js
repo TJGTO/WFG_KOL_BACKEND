@@ -82,4 +82,7 @@ router.get(
   requestValidator(getPermissionSchema, true),
   require("./getPermissionMatrix")
 );
+
+router.get("/exportPlayers/:gameid", require("./exportPlayersDetails"));
+
 module.exports = router;

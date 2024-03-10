@@ -10,6 +10,7 @@ const Userservice = require("./userService");
 const EmailService = require("./emailService");
 const { approvedSlotEmail } = require("../templates/emailtemp");
 const formatDate = require("../utils/functions");
+const ExcelJS = require("exceljs");
 
 module.exports = class Gameservice {
   constructor() {
@@ -529,6 +530,7 @@ module.exports = class Gameservice {
         editSetting: false,
         approveOrReject: false,
         editTeam: false,
+        excelDownload: false,
       };
       const setAllToTrue = R.map(R.T);
       const matchDetails = await this.matchDetails(data);
@@ -601,6 +603,151 @@ module.exports = class Gameservice {
           this.logger.info(error);
         }
       }
+    }
+  }
+
+  async exportplayersDetails(data) {
+    try {
+      const playersData = await this.gamesModel.findById(data.params.gameid);
+      const workbook = new ExcelJS.Workbook();
+
+      const keeperSheet = workbook.addWorksheet("Keepers");
+      const defenderSheet = workbook.addWorksheet("Defenders");
+      const midfielderSheet = workbook.addWorksheet("Midfielders");
+      const attackerSheet = workbook.addWorksheet("Attackers");
+
+      const headers = [
+        "Name",
+        "Position",
+        "Age",
+        "Status",
+        "Food_type",
+        "Player_type",
+        "Profile_picture",
+        "Payment_Image",
+      ];
+
+      keeperSheet.addRow(headers);
+      defenderSheet.addRow(headers);
+      midfielderSheet.addRow(headers);
+      attackerSheet.addRow(headers);
+
+      const highlightStyle = {
+        fill: {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFF00" },
+        },
+      };
+
+      playersData.players.forEach((player) => {
+        const {
+          name,
+          position,
+          age,
+          status,
+          foodtype,
+          player_type,
+          profilepictureurl,
+          paymentImageurl,
+        } = player;
+        switch (player.position.toLowerCase()) {
+          case "keeper":
+            const keeperRow = [
+              name,
+              position,
+              age,
+              status,
+              foodtype,
+              player_type,
+              `https://wfgimagebucket.s3.amazonaws.com/profilepictures/${profilepictureurl}`,
+              `https://wfgimagebucket.s3.amazonaws.com/paymentpictures/${
+                paymentImageurl[paymentImageurl.length - 1]
+              }`,
+            ];
+            keeperSheet.addRow(keeperRow);
+            break;
+          case "defence":
+            const defenceRow = [
+              name,
+              position,
+              age,
+              status,
+              foodtype,
+              player_type,
+              `https://wfgimagebucket.s3.amazonaws.com/profilepictures/${profilepictureurl}`,
+              `https://wfgimagebucket.s3.amazonaws.com/paymentpictures/${
+                paymentImageurl[paymentImageurl.length - 1]
+              }`,
+            ];
+            defenderSheet.addRow(defenceRow);
+            break;
+          case "midfield":
+            const midfieldRow = [
+              name,
+              position,
+              age,
+              status,
+              foodtype,
+              player_type,
+              `https://wfgimagebucket.s3.amazonaws.com/profilepictures/${profilepictureurl}`,
+              `https://wfgimagebucket.s3.amazonaws.com/paymentpictures/${
+                paymentImageurl[paymentImageurl.length - 1]
+              }`,
+              ,
+            ];
+            midfielderSheet.addRow(midfieldRow);
+            break;
+          case "attack":
+            const attackRow = [
+              name,
+              position,
+              age,
+              status,
+              foodtype,
+              player_type,
+              `https://wfgimagebucket.s3.amazonaws.com/profilepictures/${profilepictureurl}`,
+              `https://wfgimagebucket.s3.amazonaws.com/paymentpictures/${
+                paymentImageurl[paymentImageurl.length - 1]
+              }`,
+            ];
+            attackerSheet.addRow(attackRow);
+            break;
+          default:
+            break;
+        }
+      });
+      const rowIndex = keeperSheet.rowCount;
+      for (let i = 2; i <= rowIndex; i++) {
+        const currentRow = keeperSheet.getRow(i);
+        const currentCell = currentRow.getCell(6);
+
+        if (currentCell.value && currentCell.value.toLowerCase() === "Player") {
+          currentRow.eachCell((cell) => {
+            cell.style = highlightStyle;
+          });
+        }
+      }
+
+      const filePathWithKeeper = "Keeper_details";
+      const filePathWithDefender = "Defender_details";
+      const filePathWithMidfielder = "Midfielder_details";
+      const filePathWithAttacker = "Attacker_details";
+
+      await workbook.xlsx.writeFile(filePathWithKeeper);
+      await workbook.xlsx.writeFile(filePathWithDefender);
+      await workbook.xlsx.writeFile(filePathWithMidfielder);
+      await workbook.xlsx.writeFile(filePathWithAttacker);
+
+      return {
+        filePathWithKeeper,
+        filePathWithDefender,
+        filePathWithMidfielder,
+        filePathWithAttacker,
+      };
+    } catch (error) {
+      this.logger.info(error);
+      throw new Error("Unable to fetch players details");
     }
   }
 };
