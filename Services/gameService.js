@@ -632,14 +632,6 @@ module.exports = class Gameservice {
       midfielderSheet.addRow(headers);
       attackerSheet.addRow(headers);
 
-      const highlightStyle = {
-        fill: {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: "FFFF00" },
-        },
-      };
-
       playersData.players.forEach((player) => {
         const {
           name,
@@ -651,84 +643,50 @@ module.exports = class Gameservice {
           profilepictureurl,
           paymentImageurl,
         } = player;
+        if (player.status != "Approved") {
+          return;
+        }
+        const row = [
+          name,
+          position,
+          age,
+          status,
+          foodtype,
+          player_type,
+          `https://wfgimagebucket.s3.amazonaws.com/profilepictures/${profilepictureurl}`,
+          `https://wfgimagebucket.s3.amazonaws.com/paymentpictures/${
+            paymentImageurl[paymentImageurl.length - 1]
+          }`,
+        ];
         switch (player.position.toLowerCase()) {
           case "keeper":
-            const keeperRow = [
-              name,
-              position,
-              age,
-              status,
-              foodtype,
-              player_type,
-              `https://wfgimagebucket.s3.amazonaws.com/profilepictures/${profilepictureurl}`,
-              `https://wfgimagebucket.s3.amazonaws.com/paymentpictures/${
-                paymentImageurl[paymentImageurl.length - 1]
-              }`,
-            ];
-            keeperSheet.addRow(keeperRow);
+            keeperSheet.addRow(row);
             break;
           case "defence":
-            const defenceRow = [
-              name,
-              position,
-              age,
-              status,
-              foodtype,
-              player_type,
-              `https://wfgimagebucket.s3.amazonaws.com/profilepictures/${profilepictureurl}`,
-              `https://wfgimagebucket.s3.amazonaws.com/paymentpictures/${
-                paymentImageurl[paymentImageurl.length - 1]
-              }`,
-            ];
-            defenderSheet.addRow(defenceRow);
+            defenderSheet.addRow(row);
             break;
           case "midfield":
-            const midfieldRow = [
-              name,
-              position,
-              age,
-              status,
-              foodtype,
-              player_type,
-              `https://wfgimagebucket.s3.amazonaws.com/profilepictures/${profilepictureurl}`,
-              `https://wfgimagebucket.s3.amazonaws.com/paymentpictures/${
-                paymentImageurl[paymentImageurl.length - 1]
-              }`,
-              ,
-            ];
-            midfielderSheet.addRow(midfieldRow);
+            midfielderSheet.addRow(row);
             break;
           case "attack":
-            const attackRow = [
-              name,
-              position,
-              age,
-              status,
-              foodtype,
-              player_type,
-              `https://wfgimagebucket.s3.amazonaws.com/profilepictures/${profilepictureurl}`,
-              `https://wfgimagebucket.s3.amazonaws.com/paymentpictures/${
-                paymentImageurl[paymentImageurl.length - 1]
-              }`,
-            ];
-            attackerSheet.addRow(attackRow);
+            attackerSheet.addRow(row);
             break;
           default:
             break;
         }
       });
-      const rowIndex = keeperSheet.rowCount;
-      for (let i = 2; i <= rowIndex; i++) {
-        const currentRow = keeperSheet.getRow(i);
-        const currentCell = currentRow.getCell(6);
-
-        if (currentCell.value && currentCell.value.toLowerCase() === "Player") {
-          currentRow.eachCell((cell) => {
-            cell.style = highlightStyle;
-          });
-        }
-      }
-
+      attackerSheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+        this.colortherows(row, rowNumber);
+      });
+      keeperSheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+        this.colortherows(row, rowNumber);
+      });
+      midfielderSheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+        this.colortherows(row, rowNumber);
+      });
+      defenderSheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+        this.colortherows(row, rowNumber);
+      });
       const filePathWithKeeper = "Keeper_details";
       const filePathWithDefender = "Defender_details";
       const filePathWithMidfielder = "Midfielder_details";
@@ -748,6 +706,23 @@ module.exports = class Gameservice {
     } catch (error) {
       this.logger.info(error);
       throw new Error("Unable to fetch players details");
+    }
+  }
+
+  colortherows(row, rowNumber) {
+    const highlightStyle = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FFFF00" },
+    };
+    if (rowNumber > 1) {
+      const rowData = row.values;
+
+      if (rowData[6] == "Regular Owner" || rowData[6] == "Non-Regular Owner") {
+        row.eachCell({ includeEmpty: true }, (cell) => {
+          cell.fill = highlightStyle;
+        });
+      }
     }
   }
 };

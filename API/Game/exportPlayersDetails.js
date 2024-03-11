@@ -15,6 +15,9 @@ module.exports = catchAsync(async (req, res, next) => {
       workbook.xlsx.readFile(payload.filePathWithMidfielder),
       workbook.xlsx.readFile(payload.filePathWithAttacker),
     ]);
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
     res.setHeader(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -23,7 +26,10 @@ module.exports = catchAsync(async (req, res, next) => {
       "Content-Disposition",
       "attachment; filename=players_data.xlsx"
     );
-    await workbook.xlsx.write(res);
+
+    // responseHandler(true, buffer, res, "Success", 200);
+    res.send(buffer);
+    // await workbook.xlsx.write(res);
     fs.unlinkSync(payload.filePathWithKeeper);
     fs.unlinkSync(payload.filePathWithDefender);
     fs.unlinkSync(payload.filePathWithMidfielder);

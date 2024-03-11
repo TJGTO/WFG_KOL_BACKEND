@@ -83,6 +83,10 @@ router.get(
   require("./getPermissionMatrix")
 );
 
-router.get("/exportPlayers/:gameid", require("./exportPlayersDetails"));
+router.get(
+  "/exportregistrationdetails/:gameid",
+  validateToken,
+  require("./exportPlayersDetails")
+);
 
 module.exports = router;
