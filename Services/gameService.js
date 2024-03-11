@@ -606,6 +606,12 @@ module.exports = class Gameservice {
     }
   }
 
+  /**
+   * This function exports player details from a database to Excel files.
+   *
+   * @param {Object} data The request data containing the game ID.
+   * @returns {Object} An object containing the file paths of the generated Excel files.
+   */
   async exportplayersDetails(data) {
     try {
       const playersData = await this.gamesModel.findById(data.params.gameid);
@@ -708,7 +714,12 @@ module.exports = class Gameservice {
       throw new Error("Unable to fetch players details");
     }
   }
-
+  /**
+   * Colors the rows in the table based on the value of the 7th column.
+   *
+   * @param {object} row The row to be colored.
+   * @param {number} rowNumber The row number.
+   */
   colortherows(row, rowNumber) {
     const highlightStyle = {
       type: "pattern",
