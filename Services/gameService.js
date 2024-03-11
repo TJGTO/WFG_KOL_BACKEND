@@ -713,7 +713,7 @@ module.exports = class Gameservice {
     const highlightStyle = {
       type: "pattern",
       pattern: "solid",
-      fgColor: { argb: "FFFF00" },
+      fgColor: { argb: "FF0000" },
     };
     if (rowNumber > 1) {
       const rowData = row.values;
