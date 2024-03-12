@@ -681,13 +681,23 @@ module.exports = class Gameservice {
             break;
         }
       });
-      const highlightStyle = {
+      const highlightStyleforOwners = {
         type: "pattern",
         pattern: "solid",
         fgColor: { argb: "FF0000" },
       };
+      const highlightStyleforHeaders = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFF00" },
+      };
       const colortherows = (worksheet) => {
         worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+          if (rowNumber == 1) {
+            row.eachCell({ includeEmpty: true }, (cell) => {
+              cell.fill = highlightStyleforHeaders;
+            });
+          }
           if (rowNumber > 1) {
             const rowData = row.values;
 
@@ -696,13 +706,26 @@ module.exports = class Gameservice {
               rowData[6] == "Non-Regular Owner"
             ) {
               row.eachCell({ includeEmpty: true }, (cell) => {
-                cell.fill = highlightStyle;
+                cell.fill = highlightStyleforOwners;
               });
             }
           }
         });
       };
-
+      [attackerSheet, keeperSheet, midfielderSheet, defenderSheet].forEach(
+        (worksheet) => {
+          worksheet.eachRow((row) => {
+            row.eachCell((cell) => {
+              cell.border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+              };
+            });
+          });
+        }
+      );
       colortherows(attackerSheet);
       colortherows(keeperSheet);
       colortherows(midfielderSheet);
@@ -711,132 +734,7 @@ module.exports = class Gameservice {
       return buffer;
     } catch (error) {
       this.logger.info(error);
-      throw new Error("Unable to fetch players details");
+      throw new Error("Failed to create the excel");
     }
   }
-  /**
-   * Colors the rows in the table based on the value of the 7th column.
-   *
-   * @param {object} row The row to be colored.
-   * @param {number} rowNumber The row number.
-   */
-  colortherows(row, rowNumber) {
-    const highlightStyle = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "FF0000" },
-    };
-    if (rowNumber > 1) {
-      const rowData = row.values;
-
-      if (rowData[6] == "Regular Owner" || rowData[6] == "Non-Regular Owner") {
-        row.eachCell({ includeEmpty: true }, (cell) => {
-          cell.fill = highlightStyle;
-        });
-      }
-    }
-  }
-  /*async exportplayersDetails(data) {
-  try {
-    const playersData = await this.gamesModel.findById(data.params.gameid);
-    const workbook = new ExcelJS.Workbook();
-
-    const keeperSheet = workbook.addWorksheet("Keepers");
-    const defenderSheet = workbook.addWorksheet("Defenders");
-    const midfielderSheet = workbook.addWorksheet("Midfielders");
-    const attackerSheet = workbook.addWorksheet("Attackers");
-
-    const headers = [
-      "Name",
-      "Position",
-      "Age",
-      "Status",
-      "Food_type",
-      "Player_type",
-      "Profile_picture",
-      "Payment_Image",
-    ];
-
-    keeperSheet.addRow(headers);
-    defenderSheet.addRow(headers);
-    midfielderSheet.addRow(headers);
-    attackerSheet.addRow(headers);
-
-    playersData.players.forEach((player) => {
-      const {
-        name,
-        position,
-        age,
-        status,
-        foodtype,
-        player_type,
-        profilepictureurl,
-        paymentImageurl,
-      } = player;
-      if (player.status != "Approved") {
-        return;
-      }
-      const row = [
-        name,
-        position,
-        age,
-        status,
-        foodtype,
-        player_type,
-        `https://wfgimagebucket.s3.amazonaws.com/profilepictures/${profilepictureurl}`,
-        `https://wfgimagebucket.s3.amazonaws.com/paymentpictures/${
-          paymentImageurl[paymentImageurl.length - 1]
-        }`,
-      ];
-      switch (player.position.toLowerCase()) {
-        case "keeper":
-          keeperSheet.addRow(row);
-          break;
-        case "defence":
-          defenderSheet.addRow(row);
-          break;
-        case "midfield":
-          midfielderSheet.addRow(row);
-          break;
-        case "attack":
-          attackerSheet.addRow(row);
-          break;
-        default:
-          break;
-      }
-    });
-
-    // Define the function to color the rows
-    const colortherows = (worksheet) => {
-      worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
-        // Your condition for coloring rows here
-        // Example: if rowNumber is even, color the row
-        if (rowNumber % 2 === 0) {
-          row.eachCell({ includeEmpty: true }, cell => {
-            cell.fill = {
-              type: 'pattern',
-              pattern: 'solid',
-              fgColor: { argb: 'FFFF00' } // Yellow color (you can set any color you want)
-            };
-          });
-        }
-      });
-    };
-
-    // Apply row coloring to each worksheet
-    colortherows(attackerSheet);
-    colortherows(keeperSheet);
-    colortherows(midfielderSheet);
-    colortherows(defenderSheet);
-
-    // Write the workbook to buffer
-    const buffer = await workbook.xlsx.writeBuffer();
-
-    return { buffer };
-  } catch (error) {
-    this.logger.info(error);
-    throw new Error("Unable to fetch players details");
-  }
-}
-*/
 };
