@@ -5,18 +5,18 @@ const fs = require("fs");
 const Exceljs = require("exceljs");
 module.exports = catchAsync(async (req, res, next) => {
   let payload = await new gameService().exportplayersDetails(req);
-  let newPayload = JSON.stringify(payload);
-  if (newPayload != undefined) {
-    const workbook = new Exceljs.Workbook();
+  // let newPayload = JSON.stringify(payload);
+  if (payload != undefined) {
+    // const workbook = new Exceljs.Workbook();
 
-    await Promise.all([
-      workbook.xlsx.readFile(payload.filePathWithKeeper),
-      workbook.xlsx.readFile(payload.filePathWithDefender),
-      workbook.xlsx.readFile(payload.filePathWithMidfielder),
-      workbook.xlsx.readFile(payload.filePathWithAttacker),
-    ]);
+    // await Promise.all([
+    //   workbook.xlsx.readFile(payload.filePathWithKeeper),
+    //   workbook.xlsx.readFile(payload.filePathWithDefender),
+    //   workbook.xlsx.readFile(payload.filePathWithMidfielder),
+    //   workbook.xlsx.readFile(payload.filePathWithAttacker),
+    // ]);
 
-    const buffer = await workbook.xlsx.writeBuffer();
+    // const buffer = await workbook.xlsx.writeBuffer();
 
     res.setHeader(
       "Content-Type",
@@ -28,12 +28,12 @@ module.exports = catchAsync(async (req, res, next) => {
     );
 
     // responseHandler(true, buffer, res, "Success", 200);
-    res.send(buffer);
+    res.send(payload);
     // await workbook.xlsx.write(res);
-    fs.unlinkSync(payload.filePathWithKeeper);
-    fs.unlinkSync(payload.filePathWithDefender);
-    fs.unlinkSync(payload.filePathWithMidfielder);
-    fs.unlinkSync(payload.filePathWithAttacker);
+    // fs.unlinkSync(payload.filePathWithKeeper);
+    // fs.unlinkSync(payload.filePathWithDefender);
+    // fs.unlinkSync(payload.filePathWithMidfielder);
+    // fs.unlinkSync(payload.filePathWithAttacker);
   } else {
     responseHandler(false, payload, res, payload.message, 404);
   }
