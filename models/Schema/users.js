@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { number } = require("yup");
 const { Schema } = mongoose;
 
 const usersSchema = new Schema(
@@ -43,6 +44,19 @@ const usersSchema = new Schema(
     youtube: { type: String },
     about: { type: String },
     salt: { type: String },
+    badges: [
+      {
+        title: {
+          type: String,
+        },
+        level: {
+          type: number,
+        },
+        priority: {
+          type: number,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
