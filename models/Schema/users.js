@@ -44,19 +44,19 @@ const usersSchema = new Schema(
     youtube: { type: String },
     about: { type: String },
     salt: { type: String },
-    // badges: [
-    //   {
-    //     title: {
-    //       type: String,
-    //     },
-    //     level: {
-    //       type: number,
-    //     },
-    //     priority: {
-    //       type: number,
-    //     },
-    //   },
-    // ],
+    badges: [
+      {
+        title: {
+          type: String,
+        },
+        level: {
+          type: Number,
+        },
+        priority: {
+          type: Number,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

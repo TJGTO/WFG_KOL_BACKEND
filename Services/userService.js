@@ -336,4 +336,15 @@ module.exports = class Userservice {
       throw new Error("Unable to export users details");
     }
   }
+  /*
+  db.users.updateMany({email:"tathagata5121@gmail.com"}, {
+  $push: {
+    badges: {
+      title: "old Badge",
+      level: 3,
+      priority: 1,
+    },
+  },
+})
+  */
 };
