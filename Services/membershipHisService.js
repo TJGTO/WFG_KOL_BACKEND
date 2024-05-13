@@ -11,11 +11,11 @@ module.exports = class MembershipHistoryservice {
     this.logger = logger;
   }
   /**
-   * get all states
-   * @param {*} request
-   * @returns
+   * Get all active membership list.
+   *
+   * @param {string} flag - The flag to filter the membership list.
+   * @returns {Promise<Array<Object>>} The list of active memberships.
    */
-  //
   async getAllActiveMembershipList(flag) {
     try {
       let filter = {};
@@ -53,6 +53,16 @@ module.exports = class MembershipHistoryservice {
     }
   }
 
+  /**
+   * Creates a new membership record.
+   *
+   * @param {Object} data The data to create the record with.
+   * @param {string} data.membershipId The membership ID.
+   * @param {string} data.userId The user ID.
+   * @param {Date} data.validfrom The valid from date.
+   * @param {Date} data.validto The valid to date.
+   * @returns {Promise<Object>} The created record.
+   */
   async createMembershipRecord(data) {
     try {
       data.membershipId = new ObjectId(data.membershipId);
