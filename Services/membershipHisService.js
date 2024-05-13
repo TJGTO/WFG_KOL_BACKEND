@@ -2,6 +2,7 @@ const {
   MembershipHistoryModel,
 } = require("../models/Schema/membershipHIstory");
 const { ObjectId } = require("mongodb");
+const R = require("ramda");
 const logger = require("../utils/loggerConfig");
 
 module.exports = class MembershipHistoryservice {
@@ -32,7 +33,20 @@ module.exports = class MembershipHistoryservice {
           },
         };
       }
-      const list = await this.membershipHistoryModel.find(filter);
+      const list = await this.membershipHistoryModel.aggregate([
+        {
+          $match: filter,
+        },
+        {
+          $project: {
+            createdAt: 0,
+            updatedAt: 0,
+            _id: 0,
+            __v: 0,
+          },
+        },
+      ]);
+
       return list;
     } catch (err) {
       throw new Error("Failed to fetch the membership list");
