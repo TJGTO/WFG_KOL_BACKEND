@@ -1,13 +1,12 @@
-const {
-  MembershipHistoryModel,
-} = require("../models/Schema/membershipHIstory");
+const { MembershipRecordModel } = require("../models/Schema/membershipHIstory");
 const { ObjectId } = require("mongodb");
 const R = require("ramda");
+const formatDate = require("../utils/functions");
 const logger = require("../utils/loggerConfig");
 
-module.exports = class MembershipHistoryservice {
+module.exports = class MembershipRecordservice {
   constructor() {
-    this.membershipHistoryModel = MembershipHistoryModel;
+    this.membershipHistoryModel = MembershipRecordModel;
     this.logger = logger;
   }
   /**
@@ -46,7 +45,10 @@ module.exports = class MembershipHistoryservice {
           },
         },
       ]);
-
+      list.forEach((x) => {
+        x.validto = formatDate(x.validto, "DD MMM YYYY");
+        x.validfrom = formatDate(x.validfrom, "DD MMM YYYY");
+      });
       return list;
     } catch (err) {
       throw new Error("Failed to fetch the membership list");
@@ -65,11 +67,19 @@ module.exports = class MembershipHistoryservice {
    */
   async createMembershipRecord(data) {
     try {
-      data.membershipId = new ObjectId(data.membershipId);
-      data.userId = new ObjectId(data.userId);
-      data.validfrom = new Date(data.validfrom);
-      data.validto = new Date(data.validto);
-      const result = await this.membershipHistoryModel.create(data);
+      const createmembershipArray = data.users.map((item) => {
+        return {
+          membershipId: data.membershipId,
+          membershipName: data.membershipName,
+          validfrom: new Date(data.validfrom),
+          validto: new Date(data.validto),
+          ...item,
+        };
+      });
+
+      const result = await this.membershipHistoryModel.insertMany(
+        createmembershipArray
+      );
       return result;
     } catch (err) {
       this.logger.info(err);

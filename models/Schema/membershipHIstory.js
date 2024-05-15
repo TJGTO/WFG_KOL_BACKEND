@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const MembershipHistorySchema = new Schema(
+const MembershipRecordSchema = new Schema(
   {
     membershipId: { type: Schema.Types.ObjectId },
     membershipName: { type: String },
@@ -14,9 +14,9 @@ const MembershipHistorySchema = new Schema(
   { timestamps: true }
 );
 
-const MembershipHistoryModel = mongoose.model(
-  "membershipHistory",
-  MembershipHistorySchema
+const MembershipRecordModel = mongoose.model(
+  "membershipRecord",
+  MembershipRecordSchema
 );
 
-module.exports = { MembershipHistorySchema, MembershipHistoryModel };
+module.exports = { MembershipRecordSchema, MembershipRecordModel };

@@ -18,7 +18,7 @@ router.get(
 router.post(
   "/createmembershiprecord",
   validateToken,
-  requestValidator(createMemberShipRecordSchema),
+  // requestValidator(createMemberShipRecordSchema),
   require("./createmembershiprecord")
 );
 
