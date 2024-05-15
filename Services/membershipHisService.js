@@ -58,12 +58,13 @@ module.exports = class MembershipRecordservice {
   /**
    * Creates a new membership record.
    *
-   * @param {Object} data The data to create the record with.
+   * @param {object} data The data to create the membership record with.
    * @param {string} data.membershipId The membership ID.
-   * @param {string} data.userId The user ID.
-   * @param {Date} data.validfrom The valid from date.
-   * @param {Date} data.validto The valid to date.
-   * @returns {Promise<Object>} The created record.
+   * @param {string} data.membershipName The membership name.
+   * @param {string} data.validfrom The valid from date.
+   * @param {string} data.validto The valid to date.
+   * @param {array} data.users The users to create the membership record for.
+   * @returns {object} The created membership record.
    */
   async createMembershipRecord(data) {
     try {
