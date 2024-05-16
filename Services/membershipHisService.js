@@ -37,6 +37,11 @@ module.exports = class MembershipRecordservice {
           $match: filter,
         },
         {
+          $addFields: {
+            cardId: "$_id",
+          },
+        },
+        {
           $project: {
             createdAt: 0,
             updatedAt: 0,
@@ -85,6 +90,33 @@ module.exports = class MembershipRecordservice {
     } catch (err) {
       this.logger.info(err);
       throw new Error("Failed to create the record");
+    }
+  }
+
+  async extendMembership(data) {
+    try {
+      const membership = await this.membershipHistoryModel.findById(
+        data.cardId
+      );
+      membership.validfrom = new Date(data.validfrom);
+      membership.validto = new Date(data.validto);
+      await membership.save();
+      return "successfull";
+    } catch (err) {
+      this.logger.info(err);
+      throw new Error("Failed to extend the membership");
+    }
+  }
+
+  async removeMembership(data) {
+    try {
+      const membership = await this.membershipHistoryModel.findOneAndDelete({
+        _id: new ObjectId(data.cardId),
+      });
+      return membership;
+    } catch (err) {
+      this.logger.info(err);
+      throw new Error("Failed to extend the membership");
     }
   }
 };

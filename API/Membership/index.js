@@ -22,4 +22,17 @@ router.post(
   require("./createmembershiprecord")
 );
 
+router.post(
+  "/extendmembership",
+  validateToken,
+  // requestValidator(createMemberShipRecordSchema),
+  require("./extendmembership")
+);
+
+router.post(
+  "/removemembership",
+  validateToken,
+  // requestValidator(createMemberShipRecordSchema),
+  require("./removemembership")
+);
 module.exports = router;
