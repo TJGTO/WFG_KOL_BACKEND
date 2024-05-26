@@ -73,12 +73,18 @@ module.exports = class MembershipRecordservice {
    */
   async createMembershipRecord(data) {
     try {
+      const count = (await this.membershipHistoryModel.countDocuments({})) + 1;
+
       const createmembershipArray = data.users.map((item) => {
         return {
           membershipId: data.membershipId,
           membershipName: data.membershipName,
+          membershipCardId: `WFG_${new Date().getFullYear()}_${count
+            .toString()
+            .padStart(4, "0")}`,
           validfrom: new Date(data.validfrom),
           validto: new Date(data.validto),
+          amount: data.amount,
           ...item,
         };
       });
@@ -92,7 +98,12 @@ module.exports = class MembershipRecordservice {
       throw new Error("Failed to create the record");
     }
   }
-
+  /**
+   * Extends the membership validity period.
+   * @param {Object} data - The data containing the card ID, valid from date, and valid to date.
+   * @returns {Promise<string>} - A promise that resolves to a string indicating the success of the operation.
+   * @throws {Error} - If there is an error extending the membership.
+   */
   async extendMembership(data) {
     try {
       const membership = await this.membershipHistoryModel.findById(
@@ -100,6 +111,7 @@ module.exports = class MembershipRecordservice {
       );
       membership.validfrom = new Date(data.validfrom);
       membership.validto = new Date(data.validto);
+      membership.amount = data.amount;
       await membership.save();
       return "successfull";
     } catch (err) {
