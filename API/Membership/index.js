@@ -15,6 +15,13 @@ router.get(
   validateToken,
   require("./getmembershipecords")
 );
+
+router.post(
+  "/getmembershiprecords",
+  validateToken,
+  require("./getmembershipecords")
+);
+
 router.post(
   "/createmembershiprecord",
   validateToken,
