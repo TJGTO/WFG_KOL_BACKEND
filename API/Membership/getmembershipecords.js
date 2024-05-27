@@ -4,8 +4,9 @@ const responseHandler = require("../../utils/responseHandler");
 
 module.exports = catchAsync(async (req, res, next) => {
   let flag = req.params.flag || "";
+
   let payload = await new MembershipRecordservice().getAllActiveMembershipList(
-    flag
+    req.body
   );
   responseHandler(true, payload, res);
 });

@@ -15,23 +15,26 @@ module.exports = class MembershipRecordservice {
    * @param {string} flag - The flag to filter the membership list.
    * @returns {Promise<Array<Object>>} The list of active memberships.
    */
-  async getAllActiveMembershipList(flag) {
+  async getAllActiveMembershipList(data) {
     try {
       let filter = {};
-      if (flag == "active") {
+      if (data.flag == "active") {
         filter = {
           validto: {
             $gt: new Date(),
           },
         };
       }
-      if (flag == "inactive") {
+      if (data.flag == "inactive") {
         filter = {
           validto: {
             $lt: new Date(),
           },
         };
       }
+      const countTotalDocs = await this.membershipHistoryModel.countDocuments(
+        filter
+      );
       const list = await this.membershipHistoryModel.aggregate([
         {
           $match: filter,
@@ -49,12 +52,27 @@ module.exports = class MembershipRecordservice {
             __v: 0,
           },
         },
+        // {
+        //   $sort: { updatedAt: -1 },
+        // },
+        {
+          $skip: data.skip,
+        },
+        {
+          $limit: data.limit,
+        },
+        {
+          $sort: { createdAt: 1 },
+        },
       ]);
       list.forEach((x) => {
         x.validto = formatDate(x.validto, "DD MMM YYYY");
         x.validfrom = formatDate(x.validfrom, "DD MMM YYYY");
       });
-      return list;
+      return {
+        totalCount: countTotalDocs,
+        cards: list,
+      };
     } catch (err) {
       throw new Error("Failed to fetch the membership list");
     }
@@ -75,11 +93,11 @@ module.exports = class MembershipRecordservice {
     try {
       const count = (await this.membershipHistoryModel.countDocuments({})) + 1;
 
-      const createmembershipArray = data.users.map((item) => {
+      const createmembershipArray = data.users.map((item, index) => {
         return {
           membershipId: data.membershipId,
           membershipName: data.membershipName,
-          membershipCardId: `WFG_${new Date().getFullYear()}_${count
+          membershipCardId: `WFG_${new Date().getFullYear()}_${(count + index)
             .toString()
             .padStart(4, "0")}`,
           validfrom: new Date(data.validfrom),
@@ -122,10 +140,11 @@ module.exports = class MembershipRecordservice {
 
   async removeMembership(data) {
     try {
-      const membership = await this.membershipHistoryModel.findOneAndDelete({
-        _id: new ObjectId(data.cardId),
-      });
-      return membership;
+      // const membership = await this.membershipHistoryModel.findOneAndDelete({
+      //   _id: new ObjectId(data.cardId),
+      // });
+      // return membership;
+      return "success";
     } catch (err) {
       this.logger.info(err);
       throw new Error("Failed to extend the membership");
