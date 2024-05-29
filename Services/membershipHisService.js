@@ -196,6 +196,10 @@ module.exports = class MembershipRecordservice {
           $sort: { createdAt: 1 },
         },
       ]);
+      searchResults.forEach((x) => {
+        x.validto = formatDate(x.validto, "DD MMM YYYY");
+        x.validfrom = formatDate(x.validfrom, "DD MMM YYYY");
+      });
       return searchResults;
     } catch (error) {
       throw new Error("Failed to fetch the search results");
