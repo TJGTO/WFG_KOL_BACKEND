@@ -22,6 +22,7 @@ router.post(
   require("./getmembershipecords")
 );
 
+router.post("/search", validateToken, require("./searchmembership"));
 router.post(
   "/createmembershiprecord",
   validateToken,

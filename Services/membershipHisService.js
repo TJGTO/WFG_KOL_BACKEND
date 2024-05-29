@@ -150,4 +150,59 @@ module.exports = class MembershipRecordservice {
       throw new Error("Failed to extend the membership");
     }
   }
+
+  /**
+   * Searches for records based on the provided search criteria.
+   * @param {Object} data - The search criteria.
+   * @param {string} data.searchString - The string to search for in the userName and membershipCardId fields.
+   * @param {number} data.skip - The number of records to skip.
+   * @param {number} data.limit - The maximum number of records to return.
+   * @returns {Promise<Array>} - A promise that resolves to an array of search results.
+   * @throws {Error} - If there is an error fetching the search results.
+   */
+  async searchrecords(data) {
+    try {
+      let searchResults = await this.membershipHistoryModel.aggregate([
+        {
+          $match: {
+            $or: [
+              { userName: { $regex: data.searchString, $options: "i" } },
+              {
+                membershipCardId: { $regex: data.searchString, $options: "i" },
+              },
+            ],
+          },
+        },
+        {
+          $addFields: {
+            cardId: "$_id",
+          },
+        },
+        {
+          $project: {
+            createdAt: 0,
+            updatedAt: 0,
+            _id: 0,
+            __v: 0,
+          },
+        },
+        {
+          $skip: data.skip,
+        },
+        {
+          $limit: data.limit,
+        },
+        {
+          $sort: { createdAt: 1 },
+        },
+      ]);
+      searchResults.forEach((x) => {
+        x.validto = formatDate(x.validto, "DD MMM YYYY");
+        x.validfrom = formatDate(x.validfrom, "DD MMM YYYY");
+      });
+      return searchResults;
+    } catch (error) {
+      throw new Error("Failed to fetch the search results");
+    }
+  }
 };
