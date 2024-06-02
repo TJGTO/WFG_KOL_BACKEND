@@ -32,6 +32,15 @@ module.exports = class MembershipRecordservice {
           },
         };
       }
+      if (data.searchString) {
+        filter = {
+          ...filter,
+          $or: [
+            { userName: { $regex: data.searchString, $options: "i" } },
+            { membershipCardId: { $regex: data.searchString, $options: "i" } },
+          ],
+        };
+      }
       const countTotalDocs = await this.membershipHistoryModel.countDocuments(
         filter
       );
@@ -131,7 +140,10 @@ module.exports = class MembershipRecordservice {
       membership.validto = new Date(data.validto);
       membership.amount = data.amount;
       await membership.save();
-      return "successfull";
+      let response = JSON.parse(JSON.stringify(membership));
+      response.validto = formatDate(response.validto, "DD MMM YYYY");
+      response.validfrom = formatDate(response.validfrom, "DD MMM YYYY");
+      return response;
     } catch (err) {
       this.logger.info(err);
       throw new Error("Failed to extend the membership");
