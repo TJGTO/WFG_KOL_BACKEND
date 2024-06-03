@@ -476,7 +476,11 @@ module.exports = class Gameservice {
         gameDetails.matchType == "Tournament" &&
         data.body.status == "Approved"
       ) {
-        this.sendEmailtoUser(data.body.playerId, "WFT 6.0", gameDetails.date);
+        this.sendEmailtoUser(
+          data.body.playerId,
+          "CarnageCup 1.0",
+          gameDetails.date
+        );
       }
 
       return playerStatus;
