@@ -101,7 +101,19 @@ module.exports = class MembershipRecordservice {
   async createMembershipRecord(data) {
     try {
       const count = (await this.membershipHistoryModel.countDocuments({})) + 1;
+      const allUserIds = data.users.map((item, index) => item.userId);
 
+      const findExsistingUsers = await this.membershipHistoryModel.find({
+        userId: { $in: allUserIds },
+      });
+
+      if (findExsistingUsers && findExsistingUsers.length > 0) {
+        return {
+          success: false,
+          data: {},
+          message: "You are trying to add some esxisting members",
+        };
+      }
       const createmembershipArray = data.users.map((item, index) => {
         return {
           membershipId: data.membershipId,
@@ -119,7 +131,11 @@ module.exports = class MembershipRecordservice {
       const result = await this.membershipHistoryModel.insertMany(
         createmembershipArray
       );
-      return result;
+      return {
+        success: true,
+        data: result,
+        message: "Success",
+      };
     } catch (err) {
       this.logger.info(err);
       throw new Error("Failed to create the record");
