@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const validateToken = require("../../utils/middlewares/validateToken");
-const { createMemberShipRecordSchema } = require("./validationSchema");
+const {
+  createMemberShipRecordSchema,
+  extendMemberShipRecordSchema,
+} = require("./validationSchema");
 const requestValidator = require("../../utils/middlewares/requestValidator");
 
 router.get(
@@ -26,14 +29,14 @@ router.post("/search", validateToken, require("./searchmembership"));
 router.post(
   "/createmembershiprecord",
   validateToken,
-  // requestValidator(createMemberShipRecordSchema),
+  requestValidator(createMemberShipRecordSchema),
   require("./createmembershiprecord")
 );
 
 router.post(
   "/extendmembership",
   validateToken,
-  // requestValidator(createMemberShipRecordSchema),
+  requestValidator(extendMemberShipRecordSchema),
   require("./extendmembership")
 );
 

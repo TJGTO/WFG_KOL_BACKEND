@@ -6,5 +6,9 @@ module.exports = catchAsync(async (req, res, next) => {
   let payload = await new MembershipRecordservice().createMembershipRecord(
     req.body
   );
-  responseHandler(true, payload, res);
+  if (!payload.success) {
+    responseHandler(false, payload.data, res, payload.message, 404);
+  } else {
+    responseHandler(true, payload.data, res, payload.message, 200);
+  }
 });
