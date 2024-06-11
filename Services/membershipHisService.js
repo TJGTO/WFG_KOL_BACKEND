@@ -111,7 +111,7 @@ module.exports = class MembershipRecordservice {
         return {
           success: false,
           data: {},
-          message: "You are trying to add some esxisting members",
+          message: "You are trying to add some exsisting members",
         };
       }
       const createmembershipArray = data.users.map((item, index) => {
