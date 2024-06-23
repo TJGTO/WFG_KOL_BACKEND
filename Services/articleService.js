@@ -63,6 +63,11 @@ module.exports = class Articleservice {
     try {
       const activeArtciles = await this.articleModel.aggregate([
         {
+          $match: {
+            isActive: true,
+          },
+        },
+        {
           $lookup: {
             from: "users",
             localField: "createdBy",
