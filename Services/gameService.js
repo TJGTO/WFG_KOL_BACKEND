@@ -195,7 +195,7 @@ module.exports = class Gameservice {
             from: "users",
             localField: "createdBy",
             foreignField: "_id",
-            as: "Creator",
+            as: "creator",
           },
         },
         {
@@ -219,7 +219,7 @@ module.exports = class Gameservice {
       }
       const processedMatches = match.map((match) => {
         const venueDetails = R.pathOr({}, ["venueDetails", 0], match);
-        const CreatorDetails = R.pathOr({}, ["Creator", 0], match);
+        const CreatorDetails = R.pathOr({}, ["creator", 0], match);
         const UpdatedCreatorDetails = R.omit(
           ["DOB", "address", "roles", "__v", "salt"],
           CreatorDetails

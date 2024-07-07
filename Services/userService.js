@@ -388,4 +388,13 @@ module.exports = class Userservice {
   },
 })
   */
+  // db.games.updateMany({_id: ObjectId("668a4d90cfa4e24b43a3aa0c")}, {
+  //   $push: {
+  //     otherFormFields: {
+  //       name: "Team",
+  //       type: "Dropdown",
+  //       values: ["Sodepur", "SaltLake", "South Kolkata", "Dumdum"],
+  //     },
+  //   },
+  // })
 };
