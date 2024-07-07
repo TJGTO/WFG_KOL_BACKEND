@@ -388,12 +388,24 @@ module.exports = class Userservice {
   },
 })
   */
-  // db.games.updateMany({_id: ObjectId("668a4d90cfa4e24b43a3aa0c")}, {
+  // db.games.updateMany({_id: ObjectId("668a8184b6a7d97f0b35147f")}, {
   //   $push: {
   //     otherFormFields: {
-  //       name: "Team",
-  //       type: "Dropdown",
-  //       values: ["Sodepur", "SaltLake", "South Kolkata", "Dumdum"],
+  //       $each : [
+  //         {
+  //           name : "Position",
+  //           type : "Dropdown",
+  //           required: true,
+  //           values : ["Gk","Defence","Midfield","Attack"]
+  //         },
+  //         {
+  //           name : "Team",
+  //           type : "Dropdown",
+  //           required: true,
+  //           values : ["Dumdum","Sodepur","Saltlake","South Kolkata"]
+  //         }
+  //       ]
+
   //     },
   //   },
   // })

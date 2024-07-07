@@ -242,6 +242,11 @@ module.exports = class Gameservice {
   async registerForAMatch(req) {
     try {
       const userDetails = await this.userService.userDetails(req);
+      const gameDetails = await this.matchDetails({
+        params: {
+          gameid: req.body.gameid,
+        },
+      });
 
       const query = {
         $and: [{ _id: req.body.gameid }, { "players.player_id": req.user.id }],
@@ -288,12 +293,20 @@ module.exports = class Gameservice {
       playerObj.profilepictureurl = userDetails.profilePictureURL;
       playerObj.phoneNumber = userDetails.phone_no;
       playerObj.name = userDetails.firstName + " " + userDetails.lastName;
-      playerObj.position = req.body.position;
       playerObj.status = "Paid";
       playerObj.age = this.userService.calculateAge(userDetails.DOB);
       if (req.body.matchType && req.body.matchType == "Tournament") {
-        playerObj.foodtype = req.body.foodtype;
-        playerObj.player_type = req.body.player_type;
+        playerObj.dynamicFields = [];
+        if (gameDetails && gameDetails.otherFormFields) {
+          gameDetails.otherFormFields.forEach((x) => {
+            playerObj.dynamicFields.push({
+              name: x.name,
+              value: req.body[x.name],
+            });
+          });
+        }
+        // playerObj.foodtype = req.body.foodtype;
+        // playerObj.player_type = req.body.player_type;
       }
       const player = await this.gamesModel.findByIdAndUpdate(
         { _id: new ObjectId(req.body.gameid) },
@@ -360,9 +373,8 @@ module.exports = class Gameservice {
    */
   async updatePaymentsSnapAfterAddedByAdmin(data) {
     try {
-      const { gameid, player_id, position, matchType, foodtype, player_type } =
-        data.body;
-      const game = await this.gamesModel.findById(gameid);
+      //const { gameid, player_id, matchType, ...others } = data.body;
+      const game = await this.gamesModel.findById(data.body.gameid);
 
       if (!game) {
         return {
@@ -372,7 +384,7 @@ module.exports = class Gameservice {
       }
 
       const playerIndex = game.players.findIndex(
-        (x) => x.player_id == player_id
+        (x) => x.player_id == data.body.player_id
       );
       if (playerIndex < 0) {
         return {
@@ -391,15 +403,21 @@ module.exports = class Gameservice {
           message: "Not able to upload the payment picture",
         };
       }
-      game.players[playerIndex].position = position;
       game.players[playerIndex].status = "Paid";
       game.players[playerIndex].paymentImageurl = [
         response.data.fileName,
         ...game.players[playerIndex].paymentImageurl,
       ];
-      if (matchType && matchType == "Tournament") {
-        game.players[playerIndex].foodtype = foodtype;
-        game.players[playerIndex].player_type = player_type;
+      if (data.body.matchType && data.body.matchType == "Tournament") {
+        game.players[playerIndex].dynamicFields = [];
+        if (game && game.otherFormFields) {
+          game.otherFormFields.forEach((x) => {
+            game.players[playerIndex].dynamicFields.push({
+              name: x.name,
+              value: data.body[x.name],
+            });
+          });
+        }
       }
       await game.save();
       return {
