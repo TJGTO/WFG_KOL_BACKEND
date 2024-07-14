@@ -103,12 +103,20 @@ const gameSchema = new Schema(
           type: String,
           enum: ["Defence", "Midfield", "Attack", "Keeper"],
         },
-        foodtype: {
-          type: String,
-        },
-        player_type: {
-          type: String,
-        },
+        dynamicFields: [
+          {
+            name: { type: String, required: true },
+            value: Schema.Types.Mixed,
+          },
+        ],
+      },
+    ],
+    otherFormFields: [
+      {
+        name: { type: String, required: true },
+        type: { type: String, required: true },
+        required: { type: Boolean },
+        values: { type: [String] },
       },
     ],
   },
