@@ -388,7 +388,7 @@ module.exports = class Userservice {
   },
 })
   */
-  // db.games.updateMany({_id: ObjectId("668a8184b6a7d97f0b35147f")}, {
+  // db.games.updateMany({_id: ObjectId("669b72fd7d8cdb2be0102bc2")}, {
   //   $push: {
   //     otherFormFields: {
   //       $each : [
@@ -399,10 +399,37 @@ module.exports = class Userservice {
   //           values : ["Gk","Defence","Midfield","Attack"]
   //         },
   //         {
+  //           name : "Status",
+  //           type : "Dropdown",
+  //           required: true,
+  //           values : ["Member","Non-member","Outsider","Residential"]
+  //         },
+  //         {
   //           name : "Team",
   //           type : "Dropdown",
   //           required: true,
-  //           values : ["Dumdum","Sodepur","Saltlake","South Kolkata"]
+  //           values : [
+  //             "BFA",
+  //             "Techie Tacklers",
+  //             "Morning legends",
+  //             "La Kolbicelestes",
+  //             "Newtown Fc",
+  //             "Fiiob Junos",
+  //             "Skyking Fc",
+  //             "Techie Tackler blues",
+  //             "Bengal Scousers",
+  //             "Legacy Fc",
+  //             "FIIOB",
+  //             "New Town Soccer Club",
+  //             "Legend Fc",
+  //             "CLFC",
+  //             "Underdogs",
+  //             "DUFC Jovenes",
+  //             "86/1",
+  //             "Airfeet Fc",
+  //             "WFG team 1",
+  //             "Morning legends Yellow"
+  //           ]
   //         }
   //       ]
 

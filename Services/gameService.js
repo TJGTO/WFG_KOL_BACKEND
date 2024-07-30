@@ -759,4 +759,39 @@ module.exports = class Gameservice {
       throw new Error("Failed to create the excel");
     }
   }
+
+  async getPlayersForTournament(data) {
+    try {
+      const gameDetails = await this.gamesModel.findOne({
+        _id: new ObjectId(data.body.gameid),
+      });
+      if (!gameDetails) {
+        throw new Error("Game not found");
+      }
+
+      let players = gameDetails.players.filter((x) => {
+        let dynamicFields = x.dynamicFields;
+        let teamDetail = dynamicFields.find((y) => y.name == "Team");
+        if (teamDetail.value == data.body.teamName) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      let results = players.map((x) => {
+        let obj = {
+          cardId: x._id,
+          userName: x.name,
+          userId: x.player_id,
+          teamName: data.body.teamName,
+          profilePictureURL: x.profilepictureurl,
+        };
+
+        return obj;
+      });
+      return results;
+    } catch (error) {
+      throw new Error("Failed to fetch the details");
+    }
+  }
 };
