@@ -89,4 +89,9 @@ router.get(
   require("./exportPlayersDetails")
 );
 
+router.post(
+  "/getRabonacupteamPlayers",
+  validateToken,
+  require("./getRabonaCup")
+);
 module.exports = router;
