@@ -772,7 +772,7 @@ module.exports = class Gameservice {
       let players = gameDetails.players.filter((x) => {
         let dynamicFields = x.dynamicFields;
         let teamDetail = dynamicFields.find((y) => y.name == "Team");
-        if (teamDetail.value == data.body.teamName) {
+        if (teamDetail.value == data.body.teamName && x.status == "Approved") {
           return true;
         } else {
           return false;
@@ -792,6 +792,46 @@ module.exports = class Gameservice {
       return results;
     } catch (error) {
       throw new Error("Failed to fetch the details");
+    }
+  }
+
+  async addPlayerstoTeamRabona(data) {
+    try {
+      const gameDetails = await this.gamesModel.findOne({
+        _id: new ObjectId(data.body.gameid),
+      });
+      if (!gameDetails) {
+        throw new Error("Game not found");
+      }
+
+      const response = await this.awsService.uploadFile(
+        data.files.file,
+        "profilepictures/"
+      );
+      if (!response.isSuccess) {
+        throw Error("Failed to upload the picture");
+      }
+      const playerObj = {};
+      playerObj.player_id = new ObjectId("65e77cd15abcafa7b55d2069");
+      playerObj.paymentImageurl = ["fwfwf"];
+      playerObj.profilepictureurl = response.data.fileName;
+      playerObj.phoneNumber = "";
+      playerObj.name = data.body.name;
+      playerObj.status = "Approved";
+      playerObj.age = data.body.age;
+      playerObj.dynamicFields = [
+        { name: "Position", value: data.body.position },
+        { name: "Status", value: "Outsider" },
+        { name: "Team", value: data.body.team },
+      ];
+
+      const player = await this.gamesModel.findByIdAndUpdate(
+        { _id: new ObjectId(data.body.gameid) },
+        { $push: { players: playerObj } }
+      );
+      return player;
+    } catch (error) {
+      throw new Error("Failed to register the details");
     }
   }
 };

@@ -94,4 +94,11 @@ router.post(
   validateToken,
   require("./getRabonaCup")
 );
+
+router.post(
+  "/addplayerstoRabons",
+  validateToken,
+  require("./adplayerstoRabona")
+);
+
 module.exports = router;
