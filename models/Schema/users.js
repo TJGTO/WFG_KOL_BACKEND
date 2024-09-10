@@ -44,6 +44,8 @@ const usersSchema = new Schema(
     youtube: { type: String },
     about: { type: String },
     salt: { type: String },
+    fotp: { type: String },
+    timeforfotp: { type: String },
     badges: [
       {
         title: {

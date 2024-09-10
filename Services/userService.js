@@ -321,6 +321,18 @@ module.exports = class Userservice {
       throw new Error("Failed to get permission Matrix");
     }
   }
+
+  async updatOtp(data) {
+    try {
+      const results = await this.userModel.findOneAndUpdate(
+        { email: data.email },
+        data.body
+      );
+      return results ? true : false;
+    } catch (error) {
+      throw new Error("failed to update user");
+    }
+  }
   async exportUser() {
     try {
       const usersWithDOB = [];

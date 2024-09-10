@@ -5,6 +5,7 @@ const {
   createUserSchema,
   loginvalidationschema,
   updateuserschema,
+  footpSchema,
   changePasswordSchema,
 } = require("./validationSchema");
 const validateToken = require("../../utils/middlewares/validateToken");
@@ -56,6 +57,12 @@ router.get(
   "/profilepermission/:userid",
   validateToken,
   require("./getProfilePermission")
+);
+
+router.post(
+  "/updatefotp",
+  requestValidator(footpSchema),
+  require("./updatefOtp")
 );
 
 module.exports = router;

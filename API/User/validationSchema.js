@@ -53,9 +53,16 @@ const updateuserschema = yup.object().shape({
   }),
 });
 
+const footpSchema = yup.object({
+  body: yup.object({
+    email: yup.string().required("Please enter email"),
+  }),
+});
+
 module.exports = {
   createUserSchema,
   loginvalidationschema,
   updateuserschema,
+  footpSchema,
   changePasswordSchema,
 };
