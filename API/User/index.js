@@ -7,6 +7,7 @@ const {
   updateuserschema,
   footpSchema,
   changePasswordSchema,
+  checkOTPandupdatepasswordSchema,
 } = require("./validationSchema");
 const validateToken = require("../../utils/middlewares/validateToken");
 const roleValidator = require("../../utils/middlewares/roleValidator");
@@ -63,6 +64,12 @@ router.post(
   "/updatefotp",
   requestValidator(footpSchema),
   require("./updatefOtp")
+);
+
+router.post(
+  "/checkotpandupdatepassword",
+  requestValidator(checkOTPandupdatepasswordSchema),
+  require("./checkotpandupdatePassword")
 );
 
 module.exports = router;

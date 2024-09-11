@@ -6,11 +6,12 @@ const emailService = require("../../Services/emailService");
 
 module.exports = catchAsync(async (req, res, next) => {
   const fotp = generatePIN();
+  const timeforfotp = new Date().getTime();
   let reqbody = {
     email: req.body.email,
     body: {
-      fotp: fotp,
-      timeforfotp: new Date().getTime(),
+      fotp,
+      timeforfotp,
     },
   };
   let payload = await new userService().updatOtp(reqbody);
@@ -22,7 +23,7 @@ module.exports = catchAsync(async (req, res, next) => {
     "forgotPassword",
     req.body.email,
     {
-      verifyLink: `https://weekendfootballkolkata.com/forgotpassword/${fotp}?email=${req.body.email}`,
+      verifyLink: `https://weekendfootballkolkata.com/forgotpassword/${fotp}_${timeforfotp}?email=${req.body.email}`,
     }
   );
   if (result) {

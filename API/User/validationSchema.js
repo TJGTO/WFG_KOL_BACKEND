@@ -59,10 +59,18 @@ const footpSchema = yup.object({
   }),
 });
 
+const checkOTPandupdatepasswordSchema = yup.object({
+  body: yup.object({
+    email: yup.string().required("Please enter email"),
+    fotp: yup.string().required("fotp is required"),
+  }),
+});
+
 module.exports = {
   createUserSchema,
   loginvalidationschema,
   updateuserschema,
   footpSchema,
+  checkOTPandupdatepasswordSchema,
   changePasswordSchema,
 };

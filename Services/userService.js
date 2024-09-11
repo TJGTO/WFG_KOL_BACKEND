@@ -322,6 +322,15 @@ module.exports = class Userservice {
     }
   }
 
+  /**
+   * Asynchronously updates the OTP (One-Time Password) for a user in the database.
+   *
+   * @param {Object} data - The data object containing the user's email and the new OTP information.
+   * @param {string} data.email - The email of the user whose OTP needs to be updated.
+   * @param {Object} data.body - The new OTP information to be updated in the user's record.
+   *
+   * @returns {Promise<boolean>} - Returns a promise that resolves to true if the update was successful, otherwise false.
+   */
   async updatOtp(data) {
     try {
       const results = await this.userModel.findOneAndUpdate(
@@ -333,6 +342,64 @@ module.exports = class Userservice {
       throw new Error("failed to update user");
     }
   }
+
+  /**
+   * Asynchronously checks the OTP (One-Time Password) and updates the user's password if the OTP is valid.
+   * @param {string} data.body.email - The email of the user whose password needs to be updated.
+   * @param {string} data.body.fotp - The OTP provided by the user for verification.
+   * @param {string} data.body.newpassword - The new password to be set for the user.
+   *
+   * @returns {Promise<Object>} - Returns a promise that resolves to an object indicating the success or failure of the operation, along with a message.
+   */
+
+  async checkOTPandupdatepassword(data) {
+    try {
+      const user = await this.userModel.findOne({ email: data.body.email });
+      if (!user || user.length == 0) {
+        return {
+          success: false,
+          message: "User not found with this email",
+        };
+      }
+      if (user.fotp && user.timeforfotp) {
+        const now = new Date();
+        const tenMinutesAgo = new Date(
+          now.getTime() - 10 * 60 * 1000
+        ).getTime();
+
+        if (tenMinutesAgo > user.timeforfotp) {
+          return {
+            success: false,
+            message: "Token is expired",
+          };
+        }
+
+        if (user.fotp != data.body.fotp) {
+          return {
+            success: false,
+            message: "Token is invalid",
+          };
+        }
+        const hashsalt = bcrypt.genSaltSync(10);
+        const hashedPassword = bcrypt.hashSync(data.body.newpassword, hashsalt);
+        user.salt = hashsalt;
+        user.password = hashedPassword;
+        await user.save();
+        return {
+          success: true,
+          message: "Password Updated Successfully",
+        };
+      } else {
+        return {
+          success: false,
+          message: "Token is invalid",
+        };
+      }
+    } catch (error) {
+      throw new Error("Failed to update the password");
+    }
+  }
+
   async exportUser() {
     try {
       const usersWithDOB = [];
