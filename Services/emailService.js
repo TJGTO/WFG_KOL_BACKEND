@@ -20,7 +20,7 @@ class EmailService {
 
   async emailTemplates(template, receiver, locals) {
     try {
-      const envpassword = process.env.adminEmailPassword;
+      const envpassword = "jxaw_diud_dxlv_usno";
       const modifiedPass = envpassword.split("_").join(" ");
       const smtpTransport = createTransport({
         host: "smtp.gmail.com",
