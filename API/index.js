@@ -9,5 +9,7 @@ router.use("/game", require("./Game"));
 router.use("/venue", require("./Venue"));
 router.use("/article", require("./Article"));
 router.use("/membership", require("./Membership"));
+router.use("/config", require("./Config"));
+router.use("/jerseyorder", require("./JerseyOrder"));
 
 module.exports = router;
