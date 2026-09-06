@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 const JerseyOrderSchema = new Schema(
   {
     name: { type: String, required: true },
-    jerseyName: { type: String, required: true },
-    jerseyNumber: { type: String, required: true },
+    jerseyName: { type: String },
+    jerseyNumber: { type: String },
     phone: { type: String, required: true },
     referralCode: { type: String },
     referrer: { type: String },

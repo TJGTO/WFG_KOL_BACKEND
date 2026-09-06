@@ -3,12 +3,11 @@ const yup = require("yup");
 const createJerseyOrderSchema = yup.object({
   body: yup.object({
     name: yup.string().trim().required("Name is required"),
-    jerseyName: yup.string().trim().required("Name on jersey is required"),
-    jerseyNumber: yup
-      .string()
-      .trim()
-      .matches(/^[0-9]{1,2}$/, "Enter a valid jersey number (0-99)")
-      .required("Number on jersey is required"),
+    jerseyName: yup.string().trim(),
+    jerseyNumber: yup.string().trim().matches(/^[0-9]{1,2}$/, {
+      message: "Enter a valid jersey number (0-99)",
+      excludeEmptyString: true,
+    }),
     phone: yup
       .string()
       .matches(/^[6-9]\d{9}$/, "Please enter a valid 10-digit phone number")
