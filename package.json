@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.115.0",
     "aws-sdk": "^2.1555.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -32,6 +33,7 @@
     "nodemailer": "^6.9.11",
     "nodemon": "^2.0.20",
     "ramda": "^0.28.0",
+    "sharp": "^0.35.4",
     "twilio": "^4.22.0",
     "uuid": "^9.0.0",
     "winston": "^3.11.0",

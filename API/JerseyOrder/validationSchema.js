@@ -26,4 +26,13 @@ const createJerseyOrderSchema = yup.object({
   }),
 });
 
-module.exports = { createJerseyOrderSchema };
+const updateJerseyOrderStatusSchema = yup.object({
+  body: yup.object({
+    status: yup
+      .string()
+      .oneOf(["verified", "rejected"], "Status must be verified or rejected")
+      .required("Status is required"),
+  }),
+});
+
+module.exports = { createJerseyOrderSchema, updateJerseyOrderStatusSchema };
