@@ -30,20 +30,24 @@ module.exports = class JerseyOrderService {
   }
 
   /**
-   * dashboard stats — units sold (total + by fabric), revenue, and the
-   * order list for the table
+   * dashboard stats — units sold (total + by fabric + by design), revenue,
+   * and the order list for the table
    * @returns
    */
   async getDashboardStats() {
     try {
       const orders = await this.jerseyOrderModel.find().sort({ createdAt: -1 }).lean();
 
+      const soldByDesign = {};
       const totals = orders.reduce(
         (acc, order) => {
           acc.totalSold += order.quantity;
           if (order.fabric === "Premium") acc.premiumSold += order.quantity;
           if (order.fabric === "Standard") acc.standardSold += order.quantity;
           acc.totalRevenue += order.total;
+          if (order.design) {
+            soldByDesign[order.design] = (soldByDesign[order.design] || 0) + order.quantity;
+          }
           return acc;
         },
         { totalSold: 0, premiumSold: 0, standardSold: 0, totalRevenue: 0 }
@@ -51,6 +55,7 @@ module.exports = class JerseyOrderService {
 
       return {
         ...totals,
+        soldByDesign,
         totalOrders: orders.length,
         orders,
       };

@@ -14,6 +14,7 @@ const createJerseyOrderSchema = yup.object({
       .required("Phone number is required"),
     referralCode: yup.string().trim(),
     referrer: yup.string().trim(),
+    design: yup.string().required("Design is required"),
     color: yup.string().required("Color is required"),
     fabric: yup.string().required("Fabric is required"),
     size: yup.string().required("Size is required"),

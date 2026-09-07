@@ -9,6 +9,7 @@ const JerseyOrderSchema = new Schema(
     phone: { type: String, required: true },
     referralCode: { type: String },
     referrer: { type: String },
+    design: { type: String, required: true },
     color: { type: String, required: true },
     fabric: { type: String, required: true },
     size: { type: String, required: true },
