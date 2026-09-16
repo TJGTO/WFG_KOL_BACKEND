@@ -25,4 +25,6 @@ router.patch(
   require("./updatestatus")
 );
 
+router.get("/exportexcel", validateToken, require("./exportexcel"));
+
 module.exports = router;
